@@ -1,0 +1,103 @@
+{
+  "version": "pilot-isubu-2026-10-v1",
+  "notes": "Resmî ISUBÜ sayfalarından sınırlı elle derlenmiş pilot. Toplu YÖK Atlas çekimi yapılmadı. Ücretler bilinmiyor. Bölüm metinleri kısa editoryal özetlerdir; istihdam garantisi veya kalite puanı değildir.",
+  "sources": [
+    {
+      "key": "isubu-computer-faq-20261014",
+      "title": "ISUBÜ Bilgisayar Mühendisliği — Sıkça Sorulan Sorular",
+      "url": "https://teknoloji.isparta.edu.tr/bilmuh/tr/sss",
+      "publisher": "Isparta Uygulamalı Bilimler Üniversitesi",
+      "retrievedAt": "2026-10-14",
+      "notes": "Türkçe genel program için yayımlanan 2023, 2024 ve 2025 başarı sıraları ve kontenjanları elle aktarıldı. MTOK kontenjanı ayrı olduğundan bu pilota alınmadı. 2026 sayısal verisi yoktur."
+    },
+    {
+      "key": "isubu-computer-ects-20261014",
+      "title": "ISUBÜ Türkçe Bilgisayar Mühendisliği — AKTS bilgi paketi",
+      "url": "https://akts.isparta.edu.tr/Public/EctsShowProgramDetails.aspx?BirimNo=27&BolumNo=2721",
+      "publisher": "Isparta Uygulamalı Bilimler Üniversitesi",
+      "retrievedAt": "2026-10-14",
+      "notes": "Eğitim dili Türkçe; programın hedef ve içeriklerinden kısa editoryal özet. Kariyer alanları iş bulma oranı değildir."
+    },
+    {
+      "key": "isubu-computer-en-20261014",
+      "title": "ISUBÜ İngilizce Bilgisayar Mühendisliği — Aday portalı",
+      "url": "https://aday.isparta.edu.tr/tr/bolumDetay/2731/bilgisayar-m%C3%BChendisli%C4%9Fi-%C4%B0ngilizce-7-d%C3%B6nem-okulda-1-d%C3%B6nem-i%C5%9Fletmede-e%C4%9Fitim",
+      "publisher": "Isparta Uygulamalı Bilimler Üniversitesi",
+      "retrievedAt": "2026-10-14",
+      "notes": "Program adı, İngilizce dil ve 7+1 işletmede eğitim modeli. Bu kaynakta doğrulanmış yıllık sıra, kontenjan veya ücret alınmadı."
+    }
+  ],
+  "programs": [
+    {
+      "key": "isubu-computer-tr-general",
+      "officialCode": null,
+      "university": "Isparta Uygulamalı Bilimler Üniversitesi",
+      "city": "Isparta",
+      "universityType": "Devlet",
+      "name": "Bilgisayar Mühendisliği",
+      "language": "Türkçe",
+      "scoreType": "SAY",
+      "scholarship": "Ücret / burs bilgisi doğrulanmadı",
+      "scholarshipPercent": null,
+      "description": "Yazılım ve donanımı birlikte ele alan bilgisayar mühendisliği programı. Algoritma, programlama, bilgisayar ağları, veri tabanı ve yapay zeka konularını içerir. Program bilgi paketinde uygulamalı eğitim, proje çalışmaları ve yazılım geliştirme gibi mesleki alanlar yer alır.",
+      "subjects": [
+        "Yazılım",
+        "Algoritma",
+        "Bilgisayar ağları",
+        "Veri tabanı",
+        "Yapay zeka"
+      ],
+      "sources": [
+        "isubu-computer-faq-20261014",
+        "isubu-computer-ects-20261014"
+      ],
+      "years": [
+        {
+          "year": 2023,
+          "rank": 93384,
+          "quota": 60,
+          "tuition": null,
+          "currency": null,
+          "sourceKey": "isubu-computer-faq-20261014"
+        },
+        {
+          "year": 2024,
+          "rank": 125316,
+          "quota": 65,
+          "tuition": null,
+          "currency": null,
+          "sourceKey": "isubu-computer-faq-20261014"
+        },
+        {
+          "year": 2025,
+          "rank": 134782,
+          "quota": 65,
+          "tuition": null,
+          "currency": null,
+          "sourceKey": "isubu-computer-faq-20261014"
+        }
+      ]
+    },
+    {
+      "key": "isubu-computer-en-general",
+      "officialCode": null,
+      "university": "Isparta Uygulamalı Bilimler Üniversitesi",
+      "city": "Isparta",
+      "universityType": "Devlet",
+      "name": "Bilgisayar Mühendisliği",
+      "language": "İngilizce",
+      "scoreType": "SAY",
+      "scholarship": "Ücret / burs bilgisi doğrulanmadı",
+      "scholarshipPercent": null,
+      "description": "İngilizce bilgisayar mühendisliği programı, yedi dönem okul ve bir dönem işletmede eğitim modeliyle tanıtılır. Bölüm tanıtımı yapay zeka ile bilgi teknolojileri alanlarındaki eğitim ve araştırma çalışmalarına yer verir.",
+      "subjects": [
+        "Bilgisayar",
+        "Yapay zeka",
+        "Bilgi teknolojileri",
+        "İşletmede eğitim"
+      ],
+      "sources": ["isubu-computer-en-20261014"],
+      "years": []
+    }
+  ]
+}
