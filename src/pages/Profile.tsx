@@ -1,3 +1,4 @@
+import { educationLanguages } from "../../shared/contracts";
 import { useState, type FormEvent } from "react";
 import { Save, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -41,10 +42,16 @@ export default function Profile() {
       <PageHeading
         eyebrow="SENİN ÖNCELİKLERİN"
         title="Seni tanıyalım."
-        description="Aynı sıralamaya sahip iki kişinin yolu farklı olabilir. Senin için önemli olanları belirt."
+        description="Tercih yaparken de üniversite hayatında da senin için önemli olanları belirt."
         action={
-          <Link className="button light" to="/oneriler">
-            Önerilerime git <ArrowRight size={16} />
+          <Link
+            className="button light"
+            to={profile.role === "candidate" ? "/oneriler" : "/kampus"}
+          >
+            {profile.role === "candidate"
+              ? "Önerilerime git"
+              : "Kampüs yaşamına git"}{" "}
+            <ArrowRight size={16} />
           </Link>
         }
       />
@@ -82,35 +89,42 @@ export default function Profile() {
                 <option value="graduate">Mezun</option>
               </select>
             </label>
-            <label>
-              Puan türün
-              <select
-                value={profile.scoreType}
-                onChange={(e) =>
-                  update(
-                    "scoreType",
-                    e.target.value as ProfileType["scoreType"],
-                  )
-                }
-              >
-                {["SAY", "EA", "SÖZ", "DİL"].map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Başarı sıran <span className="quiet">(isteğe bağlı)</span>
-              <input
-                type="number"
-                min={1}
-                max={5000000}
-                value={profile.rank ?? ""}
-                onChange={(e) =>
-                  update("rank", e.target.value ? Number(e.target.value) : null)
-                }
-                placeholder="Örneğin 85000"
-              />
-            </label>
+            {profile.role === "candidate" && (
+              <>
+                <label>
+                  Puan türün
+                  <select
+                    value={profile.scoreType}
+                    onChange={(e) =>
+                      update(
+                        "scoreType",
+                        e.target.value as ProfileType["scoreType"],
+                      )
+                    }
+                  >
+                    {["SAY", "EA", "SÖZ", "DİL", "TYT"].map((s) => (
+                      <option key={s}>{s}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Başarı sıran <span className="quiet">(isteğe bağlı)</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={5000000}
+                    value={profile.rank ?? ""}
+                    onChange={(e) =>
+                      update(
+                        "rank",
+                        e.target.value ? Number(e.target.value) : null,
+                      )
+                    }
+                    placeholder="Örneğin 85000"
+                  />
+                </label>
+              </>
+            )}
             {profile.role !== "candidate" && (
               <>
                 <label>
@@ -129,6 +143,43 @@ export default function Profile() {
                     maxLength={150}
                   />
                 </label>
+                <label>
+                  Şehrin
+                  <input
+                    value={profile.studentCity}
+                    onChange={(e) => update("studentCity", e.target.value)}
+                    maxLength={80}
+                    placeholder="Örneğin Isparta"
+                  />
+                </label>
+                <label>
+                  Kampüsün / yerleşken
+                  <input
+                    value={profile.campus}
+                    onChange={(e) => update("campus", e.target.value)}
+                    maxLength={150}
+                    placeholder="İsteğe bağlı"
+                  />
+                </label>
+                <label>
+                  Eğitim aşaman
+                  <select
+                    value={profile.studyStage}
+                    onChange={(e) =>
+                      update(
+                        "studyStage",
+                        e.target.value as ProfileType["studyStage"],
+                      )
+                    }
+                  >
+                    <option value="new">Yeni yerleştim</option>
+                    <option value="prep">Hazırlık okuyorum</option>
+                    <option value="undergraduate">
+                      Ön lisans / lisans okuyorum
+                    </option>
+                    <option value="other">Diğer / mezun</option>
+                  </select>
+                </label>
                 <p className="form-hint">
                   Bu bilgiler kendi beyanındır. Doğrulama rozeti verilmez;
                   doğrulama modülü sonraki aşamada eklenecek.
@@ -142,7 +193,11 @@ export default function Profile() {
             <span className="section-number">02</span>
             <div>
               <h2>İlgi alanların ve beklentilerin</h2>
-              <p>Ne öğrenmek ve nasıl bir hayat kurmak istiyorsun?</p>
+              <p>
+                {profile.role === "candidate"
+                  ? "Ne öğrenmek ve nasıl bir hayat kurmak istiyorsun?"
+                  : "Öğrenmek, katılmak ve keşfetmek istediğin alanlar neler?"}
+              </p>
             </div>
           </div>
           <label>
@@ -155,131 +210,144 @@ export default function Profile() {
               placeholder="Yazılım, yapay zeka ve matematik ilgimi çekiyor. Web ve mobil uygulamalar geliştirmek istiyorum…"
             />
           </label>
-          <div className="form-grid">
-            <label>
-              Öncelikli şehirlerin
-              <input
-                value={citiesText}
-                onChange={(e) => setCitiesText(e.target.value)}
-                placeholder="İzmir, Ankara"
-              />
-              <small>
-                Virgülle ayır. Bu alan kesin eleme yerine öncelik belirtir.
-              </small>
-            </label>
-            <label>
-              Eğitim dili
-              <select
-                value={profile.language}
-                onChange={(e) =>
-                  update("language", e.target.value as ProfileType["language"])
-                }
-              >
-                <option value="any">Fark etmez</option>
-                <option>Türkçe</option>
-                <option>İngilizce</option>
-              </select>
-            </label>
-            <label>
-              Üniversite türü
-              <select
-                value={profile.universityType}
-                onChange={(e) =>
-                  update(
-                    "universityType",
-                    e.target.value as ProfileType["universityType"],
-                  )
-                }
-              >
-                <option value="any">Hepsi</option>
-                <option>Devlet</option>
-                <option>Vakıf</option>
-              </select>
-              <small>Seçersen öneriler bu türle sınırlanır.</small>
-            </label>
-          </div>
-        </section>
-        <section className="panel">
-          <div className="panel-heading">
-            <span className="section-number">03</span>
-            <div>
-              <h2>Neye ne kadar önem veriyorsun?</h2>
-              <p>
-                Önceliklerini değiştirerek önerilerin nasıl değiştiğini
-                görebilirsin.
-              </p>
-            </div>
-          </div>
-          <div className="form-grid budget-fields">
-            <label>
-              Yıllık öğrenim ücreti üst sınırın (TL)
-              <input
-                type="number"
-                min={0}
-                max={10000000}
-                value={profile.maxAnnualTuition ?? ""}
-                onChange={(e) =>
-                  update(
-                    "maxAnnualTuition",
-                    e.target.value === "" ? null : Number(e.target.value),
-                  )
-                }
-                placeholder="İsteğe bağlı"
-              />
-              <small>
-                Yalnızca kaynaklı öğrenim ücretiyle karşılaştırılır; barınma ve
-                yaşam giderlerini kapsamaz.
-              </small>
-            </label>
-            <label>
-              En düşük burs önceliğin (%)
-              <input
-                type="number"
-                min={0}
-                max={100}
-                value={profile.minimumScholarship ?? ""}
-                onChange={(e) =>
-                  update(
-                    "minimumScholarship",
-                    e.target.value === "" ? null : Number(e.target.value),
-                  )
-                }
-                placeholder="İsteğe bağlı"
-              />
-              <small>Eksik burs bilgisi olumlu eşleşme sayılmaz.</small>
-            </label>
-          </div>
-          <div className="weight-grid">
-            {(
-              [
-                ["interest", "İlgi uyumu"],
-                ["city", "Şehir önceliği"],
-                ["language", "Eğitim dili"],
-                ["budget", "Ücret / burs"],
-              ] as const
-            ).map(([key, label]) => (
-              <label key={key}>
-                {label}
-                <b>{profile.weights[key]} / 5</b>
+          {profile.role === "candidate" && (
+            <div className="form-grid">
+              <label>
+                Öncelikli şehirlerin
                 <input
-                  type="range"
-                  min="0"
-                  max="5"
-                  value={profile.weights[key]}
-                  onChange={(e) =>
-                    update("weights", {
-                      ...profile.weights,
-                      [key]: Number(e.target.value),
-                    })
-                  }
+                  value={citiesText}
+                  onChange={(e) => setCitiesText(e.target.value)}
+                  placeholder="İzmir, Ankara"
                 />
-                <small>0: önem verme · 5: çok önemli</small>
+                <small>
+                  Virgülle ayır. Bu alan kesin eleme yerine öncelik belirtir.
+                </small>
               </label>
-            ))}
-          </div>
+              <label>
+                Eğitim dili
+                <select
+                  value={profile.language}
+                  onChange={(e) =>
+                    update(
+                      "language",
+                      e.target.value as ProfileType["language"],
+                    )
+                  }
+                >
+                  <option value="any">Fark etmez</option>
+                  {educationLanguages.map((language) => (
+                    <option key={language}>{language}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Üniversite türü
+                <select
+                  value={profile.universityType}
+                  onChange={(e) =>
+                    update(
+                      "universityType",
+                      e.target.value as ProfileType["universityType"],
+                    )
+                  }
+                >
+                  <option value="any">Hepsi</option>
+                  <option>Devlet</option>
+                  <option>Vakıf</option>
+                  <option>Yurt dışı</option>
+                </select>
+                <small>Seçersen öneriler bu türle sınırlanır.</small>
+              </label>
+            </div>
+          )}
         </section>
+        {profile.role === "candidate" && (
+          <section className="panel">
+            <div className="panel-heading">
+              <span className="section-number">03</span>
+              <div>
+                <h2>Neye ne kadar önem veriyorsun?</h2>
+                <p>
+                  Önceliklerini değiştirerek önerilerin nasıl değiştiğini
+                  görebilirsin.
+                </p>
+              </div>
+            </div>
+            <div className="form-grid budget-fields">
+              <label>
+                Yıllık öğrenim ücreti üst sınırın (TL)
+                <input
+                  type="number"
+                  min={0}
+                  max={10000000}
+                  value={profile.maxAnnualTuition ?? ""}
+                  onChange={(e) =>
+                    update(
+                      "maxAnnualTuition",
+                      e.target.value === "" ? null : Number(e.target.value),
+                    )
+                  }
+                  placeholder="İsteğe bağlı"
+                />
+                <small>
+                  Yalnızca kaynaklı öğrenim ücretiyle karşılaştırılır; barınma
+                  ve yaşam giderlerini kapsamaz.
+                </small>
+              </label>
+              <label>
+                En düşük burs önceliğin (%)
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={profile.minimumScholarship ?? ""}
+                  onChange={(e) =>
+                    update(
+                      "minimumScholarship",
+                      e.target.value === "" ? null : Number(e.target.value),
+                    )
+                  }
+                  placeholder="İsteğe bağlı"
+                />
+                <small>Eksik burs bilgisi olumlu eşleşme sayılmaz.</small>
+              </label>
+            </div>
+            <div className="weight-grid">
+              {(
+                [
+                  ["interest", "İlgi uyumu"],
+                  ["city", "Şehir önceliği"],
+                  ["language", "Eğitim dili"],
+                  ["budget", "Ücret / burs"],
+                ] as const
+              ).map(([key, label]) => (
+                <label key={key}>
+                  {label}
+                  <b>{profile.weights[key]} / 5</b>
+                  <input
+                    type="range"
+                    min="0"
+                    max="5"
+                    value={profile.weights[key]}
+                    onChange={(e) =>
+                      update("weights", {
+                        ...profile.weights,
+                        [key]: Number(e.target.value),
+                      })
+                    }
+                  />
+                  <small>0: önem verme · 5: çok önemli</small>
+                </label>
+              ))}
+            </div>
+          </section>
+        )}
         <div className="save-bar">
-          <p>Uyum endeksi yerleşme olasılığı değildir.</p>
+          <p>
+            {profile.role === "candidate"
+              ? "Uyum endeksi yerleşme olasılığı değildir."
+              : "Öğrenci bilgilerin kaydedilir. Mevcut rehber İSUBÜ kapsamındadır."}
+          </p>
           <button className="button dark" disabled={busy}>
             <Save size={17} />
             {busy ? "Kaydediliyor…" : "Profilimi kaydet"}

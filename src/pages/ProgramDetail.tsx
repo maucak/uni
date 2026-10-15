@@ -58,7 +58,7 @@ export default function ProgramDetail() {
             <p className="body-copy">{p.description}</p>
             <div className="detail-stats">
               <div>
-                <small>Veri yılı</small>
+                <small>Son başarı sırası yılı</small>
                 <strong>{p.year ?? "Bilinmiyor"}</strong>
               </div>
               <div>
@@ -68,7 +68,11 @@ export default function ProgramDetail() {
                 <strong>{number(p.rank)}</strong>
               </div>
               <div>
-                <small>{p.isSample ? "Örnek kontenjan" : "Kontenjan"}</small>
+                <small>
+                  {p.isSample
+                    ? "Örnek kontenjan"
+                    : `${p.quotaYear ?? ""} genel kontenjanı`}
+                </small>
                 <strong>{number(p.quota)}</strong>
               </div>
               <div>
@@ -124,6 +128,41 @@ export default function ProgramDetail() {
                 Sıralama değeri küçüldükçe geçmiş yerleşme sırası yükselir. Bu
                 değişim gelecek yıl için tahmin veya garanti değildir.
               </p>
+            </section>
+          )}
+          {p.admissionData && (
+            <section className="panel">
+              <h2>ÖSYM kayıt ayrıntıları</h2>
+              <p>
+                {p.admissionData.year} kılavuzu · Tablo-{p.admissionData.table}{" "}
+                · Kaynak satırı {p.admissionData.row}
+              </p>
+              <p className="quiet">
+                Sütun başlıklarındaki yıl ve özel kontenjan koşulları
+                geçerlidir. Boş alan bilinmiyor olarak gösterilir. Koşul
+                numaralarının açıklamaları resmî kılavuzdadır.
+              </p>
+              <details>
+                <summary>Tüm kaynak alanlarını göster</summary>
+                <div className="table-scroll">
+                  <table className="history-table">
+                    <tbody>
+                      {Object.entries(p.admissionData.columns).map(
+                        ([label, value]) => (
+                          <tr key={label}>
+                            <th>{label}</th>
+                            <td>
+                              {value === "" || value == null
+                                ? "Bilinmiyor"
+                                : String(value)}
+                            </td>
+                          </tr>
+                        ),
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
             </section>
           )}
           <section className="panel">

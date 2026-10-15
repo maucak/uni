@@ -3,6 +3,7 @@ import catalogRoutes from "./routes/catalog.ts";
 import preferenceRoutes from "./routes/preferences.ts";
 import communityRoutes from "./routes/community.ts";
 import advisorRoutes from "./routes/advisor.ts";
+import lifeRoutes from "./routes/life.ts";
 import "dotenv/config";
 import express from "express";
 import cookieParser from "cookie-parser";
@@ -61,6 +62,7 @@ api.use(
   preferenceRoutes,
   communityRoutes,
   advisorRoutes,
+  lifeRoutes,
 );
 app.use("/api", (_req, res) =>
   res

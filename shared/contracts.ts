@@ -1,13 +1,29 @@
 import { z } from "zod";
+export const educationLanguages = [
+  "Türkçe",
+  "İngilizce",
+  "Almanca",
+  "Arapça",
+  "Fransızca",
+  "Rusça",
+  "İspanyolca",
+  "Bulgarca",
+  "Ermenice",
+  "İtalyanca",
+  "Boşnakça",
+  "Çince",
+  "Korece",
+  "Türkçe-Rusça",
+] as const;
 export const profileSchema = z.object({
   displayName: z.string().trim().min(2).max(80),
   role: z.enum(["candidate", "student", "graduate"]),
-  scoreType: z.enum(["SAY", "EA", "SÖZ", "DİL"]),
+  scoreType: z.enum(["SAY", "EA", "SÖZ", "DİL", "TYT"]),
   rank: z.number().int().min(1).max(5000000).nullable(),
   interests: z.string().trim().max(1500),
   cities: z.array(z.string().max(80)).max(20),
-  language: z.enum(["any", "Türkçe", "İngilizce"]),
-  universityType: z.enum(["any", "Devlet", "Vakıf"]),
+  language: z.enum(["any", ...educationLanguages]),
+  universityType: z.enum(["any", "Devlet", "Vakıf", "Yurt dışı"]),
   maxAnnualTuition: z
     .number()
     .int()
@@ -25,6 +41,9 @@ export const profileSchema = z.object({
   university: z.string().trim().max(150),
   department: z.string().trim().max(150),
   bio: z.string().trim().max(1000),
+  studentCity: z.string().trim().max(80).default(""),
+  campus: z.string().trim().max(150).default(""),
+  studyStage: z.enum(["new", "prep", "undergraduate", "other"]).default("new"),
 });
 export type Profile = z.infer<typeof profileSchema>;
 export const defaultProfile: Profile = {
@@ -42,6 +61,9 @@ export const defaultProfile: Profile = {
   university: "",
   department: "",
   bio: "",
+  studentCity: "",
+  campus: "",
+  studyStage: "new",
 };
 export type User = { id: string; email: string; profile: Profile };
 export type Program = {
@@ -49,7 +71,7 @@ export type Program = {
   name: string;
   university: string;
   city: string;
-  universityType: "Devlet" | "Vakıf";
+  universityType: "Devlet" | "Vakıf" | "Yurt dışı";
   language: string;
   scoreType: string;
   scholarship: string;
@@ -58,9 +80,17 @@ export type Program = {
   rank: number | null;
   quota: number | null;
   year: number | null;
+  rankYear?: number | null;
+  quotaYear?: number | null;
   isSample: boolean;
   source: string;
   sourceUrl: string | null;
+  admissionData?: {
+    year: number;
+    table: string;
+    row: number;
+    columns: Record<string, string | number | null>;
+  };
   officialCode?: string | null;
   tuition?: number | null;
   feeYear?: number | null;
@@ -98,9 +128,9 @@ export const searchStateSchema = z
   .object({
     search: z.string().max(100).default(""),
     city: z.string().max(80).default(""),
-    scoreType: z.enum(["", "SAY", "EA", "SÖZ", "DİL"]).default(""),
-    language: z.enum(["", "Türkçe", "İngilizce"]).default(""),
-    type: z.enum(["", "Devlet", "Vakıf"]).default(""),
+    scoreType: z.enum(["", "SAY", "EA", "SÖZ", "DİL", "TYT"]).default(""),
+    language: z.enum(["", ...educationLanguages]).default(""),
+    type: z.enum(["", "Devlet", "Vakıf", "Yurt dışı"]).default(""),
     dataKind: z.enum(["real", "sample", "all"]).default("real"),
     rankMin: z.number().int().min(1).max(5000000).nullable().default(null),
     rankMax: z.number().int().min(1).max(5000000).nullable().default(null),

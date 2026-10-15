@@ -84,10 +84,18 @@ export default function Compare() {
                 ["Üniversite türü", (p: Program) => p.universityType],
                 ["Puan türü", (p: Program) => p.scoreType],
                 ["Burs / ücret", (p: Program) => p.scholarship],
-                ["Başarı sırası", (p: Program) => number(p.rank)],
-                ["Kontenjan", (p: Program) => number(p.quota)],
                 [
-                  "Veri yılı",
+                  "Başarı sırası",
+                  (p: Program) =>
+                    `${number(p.rank)} (${p.rankYear ?? p.year ?? "yıl bilinmiyor"})`,
+                ],
+                [
+                  "Genel kontenjan",
+                  (p: Program) =>
+                    `${number(p.quota)} (${p.quotaYear ?? "yıl bilinmiyor"})`,
+                ],
+                [
+                  "Başarı sırası yılı",
                   (p: Program) =>
                     p.year === null ? "Bilinmiyor" : String(p.year),
                 ],
@@ -101,7 +109,7 @@ export default function Compare() {
                 [
                   "Kayıt türü",
                   (p: Program) =>
-                    p.isSample ? "Sentetik örnek" : "Kaynaklı pilot",
+                    p.isSample ? "Sentetik örnek" : "Gerçek program verileri",
                 ],
                 ["İlgi alanları", (p: Program) => p.subjects.join(", ")],
                 ["Kaynak", (p: Program) => p.source],

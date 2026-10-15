@@ -14,10 +14,12 @@ import {
   LogOut,
   Scale,
   BookOpen,
+  GraduationCap,
 } from "lucide-react";
 import { useStore } from "../lib/store";
 const nav = [
   ["/", "Genel bakış", LayoutGrid],
+  ["/kampus", "Kampüs yaşamı", GraduationCap],
   ["/programlar", "Programları keşfet", Search],
   ["/oneriler", "Bana uygun programlar", Compass],
   ["/tercihler", "Tercih listelerim", Bookmark],
@@ -81,8 +83,8 @@ export function Layout() {
         </nav>
         <div className="sidebar-guide">
           <BookOpen size={20} />
-          <h3>Kararını anlayarak ver.</h3>
-          <p>Önerilerimizin nasıl çalıştığını ve verinin sınırlarını öğren.</p>
+          <h3>Yolculuğuna bilgiyle devam et.</h3>
+          <p>Önerilerin yöntemini ve kullandığımız kaynakları incele.</p>
           <Link to="/yontem" onClick={() => setOpen(false)}>
             Yöntemi incele <ArrowUpRight size={15} />
           </Link>

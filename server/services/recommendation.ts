@@ -57,6 +57,7 @@ export function recommend(
       ]),
     );
   }
+  const corpusIndex = new Map(corpus.map((p, i) => [p.id, i]));
   const userTokens = tokenize(profile.interests);
   const user = vector(userTokens);
   return programs
@@ -67,7 +68,7 @@ export function recommend(
           p.universityType === profile.universityType),
     )
     .map((program) => {
-      const i = corpus.findIndex((p) => p.id === program.id);
+      const i = corpusIndex.get(program.id) ?? -1;
       const tokens =
         i >= 0
           ? documents[i]

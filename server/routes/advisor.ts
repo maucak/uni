@@ -10,7 +10,7 @@ import {
   validateAdvisorPlan,
   type AdvisorReply,
 } from "../../shared/advisor.ts";
-import { advisorConfig, GeminiProvider } from "../services/advisor.ts";
+import { advisorConfig, createAdvisorProvider } from "../services/advisor.ts";
 import { filterPrograms, sortPrograms } from "../services/search.ts";
 const api = Router();
 api.get("/advisor/status", async (_req, res) => {
@@ -76,7 +76,7 @@ api.post("/advisor/messages", requireUser, async (req, res) => {
     fail(
       503,
       "AI_NOT_CONFIGURED",
-      "Gemini bağlantısı henüz etkin değil. Anahtar ve model sunucu ayarlarından eklenecek.",
+      "AI bağlantısı henüz etkin değil. Seçilen sağlayıcının anahtarını ve modelini sunucu ayarlarına ekle.",
     );
   const userId = res.locals.user.id;
   if (
@@ -144,7 +144,7 @@ api.post("/advisor/messages", requireUser, async (req, res) => {
           }))
       : [];
     const p = res.locals.user.profile;
-    const raw = await new GeminiProvider(config.key, config.model).generate({
+    const raw = await createAdvisorProvider(config).generate({
       message: data.message,
       state: data.state,
       profile: {
@@ -179,7 +179,7 @@ api.post("/advisor/messages", requireUser, async (req, res) => {
         validated.plan.programIds.includes(p.id),
       ),
       catalogVersion: programs[0]?.catalogVersion || (await catalogVersion()),
-      provider: "gemini",
+      provider: config.provider,
       model: config.model,
     };
     await transaction(async (c) => {

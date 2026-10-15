@@ -13,9 +13,12 @@ export default function Communities() {
   const programId = params.get("programId") || "";
   const search = params.get("search") || "";
   const tag = params.get("tag") || "";
+  const [communitySearch, setCommunitySearch] = useState("");
+  const [communityLimit, setCommunityLimit] = useState(12);
   const { data: communities, error: communityError } = useLoad<Community[]>(
-    `/communities${programId ? `?programId=${encodeURIComponent(programId)}` : ""}`,
+    `/communities?${new URLSearchParams({ ...(programId ? { programId } : {}), ...(params.get("communityId") ? { communityId: params.get("communityId")! } : {}), search: communitySearch, limit: String(communityLimit) })}`,
   );
+  const visibleCommunities = communities;
   const communityId =
     params.get("communityId") ||
     (programId ? communities?.[0]?.id || programId : "");
@@ -108,8 +111,19 @@ export default function Communities() {
         </button>
         {programId && <Link to="/topluluklar">Tüm toplulukları aç</Link>}
       </form>
+      <label>
+        Topluluk bul
+        <input
+          value={communitySearch}
+          onChange={(e) => {
+            setCommunitySearch(e.target.value);
+            setCommunityLimit(12);
+          }}
+          placeholder="Üniversite veya bölüm adı"
+        />
+      </label>
       <div className="community-grid">
-        {communities?.map((c, i) => (
+        {visibleCommunities?.slice(0, communityLimit).map((c, i) => (
           <button
             className={`community-card ${c.id === communityId ? "active" : ""}`}
             key={c.id}
@@ -132,6 +146,15 @@ export default function Communities() {
           </button>
         ))}
       </div>
+      {(visibleCommunities?.length ?? 0) === communityLimit &&
+        communityLimit < 500 && (
+          <button
+            className="button"
+            onClick={() => setCommunityLimit((n) => Math.min(500, n + 12))}
+          >
+            Daha fazla topluluk göster
+          </button>
+        )}
       {compose && (
         <section className="panel compose-panel">
           <div className="section-heading">

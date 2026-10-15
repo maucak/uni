@@ -41,3 +41,6 @@ Gemini başarılı canlı yanıtı, onay/undo'nun gerçek cevapla UI kontrolü; 
 ## 14 Ekim 2026 — kullanıcının istediği canlı tekrar
 
 GenerateContent ve güncel Interactions API üzerinden yapılan iki deneme de sağlayıcıdan HTTP 503 aldı. Gemini 3.x için Interactions bağlantısı eklendi; yapılandırılmış JSON çıktı ve store:false kullanılıyor. Son değişikliğin TypeScript kontrolü geçti. Başarılı canlı yanıt hâlâ doğrulanmadı; daha fazla ücretli istek gönderilmedi.
+
+## 15 Ekim 2026 — canlı Gemini doğrulaması başarılı
+Mobil ağda DNS erişimi sağlandı. Interactions API yanıtındaki steps/model_output/content metinleri okunacak şekilde ayrıştırıcı düzeltildi. Gerçek uçtan uca kontrol PASS: Gemini 3.8 Flash İngilizce dil filtresi önerdi; önbellek tekrarı, konuşma sırası ve konuşma silme doğrulandı. TypeScript geçti. Önceki başarısızlık kayıtları tarihsel durumdur; ağ erişimine bağlı hizmet sürekliliği garanti edilmez.

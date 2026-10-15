@@ -143,7 +143,7 @@ export default function AdvisorPanel({
         <span className={`status-dot ${status?.configured ? "online" : ""}`} />
         {status?.configured
           ? `${status.provider} · ayarlar tamam`
-          : "Gemini bağlantısı bekleniyor"}
+          : "AI bağlantısı bekleniyor"}
         <button className="text-button" onClick={reload}>
           Yenile
         </button>
@@ -153,7 +153,7 @@ export default function AdvisorPanel({
           <MessageSquare size={23} />
           <h4>Danışman alanın hazır.</h4>
           <p>
-            Gemini anahtarı ve model sunucu ayarlarına eklendiğinde konuşmaya
+            Seçilen sağlayıcının anahtarı sunucu ayarlarına eklendiğinde konuşmaya
             başlayabilirsin. Bu sırada filtreler ve kişisel öneriler çalışır.
           </p>
           <Link to="/yontem">Nasıl çalışacağını öğren</Link>
@@ -267,11 +267,11 @@ export default function AdvisorPanel({
           }
         >
           <Send size={15} />
-          {busy ? "Yanıt hazırlanıyor…" : "Danışmana gönder"}
+          {busy ? "Danışman yanıtı bekleniyor…" : "Danışmana gönder"}
         </button>
       </form>
       <p className="advisor-privacy">
-        Gönderdiğinde mesajın, arama ölçütlerin ve öneri bağlamın Gemini’ye
+        Gönderdiğinde mesajın, arama ölçütlerin ve öneri bağlamın seçili AI sağlayıcısına
         iletilir. E-posta ve adın gönderilmez. Konuşmalar hesabında saklanır;
         geçmişten silebilirsin.
       </p>

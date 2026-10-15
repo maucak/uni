@@ -10,9 +10,24 @@ api.get("/communities", async (req, res) => {
   const programId = req.query.programId
     ? uuid.parse(req.query.programId)
     : null;
+  const communityId = req.query.communityId
+    ? uuid.parse(req.query.communityId)
+    : null;
+  const search = z
+    .string()
+    .trim()
+    .max(100)
+    .parse(req.query.search || "");
+  const limit = z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(500)
+    .default(12)
+    .parse(req.query.limit);
   const r = await pool.query(
-    "SELECT c.*,count(q.id)::int AS question_count FROM communities c LEFT JOIN questions q ON q.community_id=c.id WHERE ($1::uuid IS NULL OR c.program_id=$1) GROUP BY c.id ORDER BY c.name",
-    [programId],
+    "SELECT c.*,count(q.id)::int AS question_count FROM communities c LEFT JOIN questions q ON q.community_id=c.id WHERE ($1::uuid IS NULL OR c.program_id=$1) AND ($2::uuid IS NULL OR c.id=$2) AND ($3::text='' OR strpos(lower(c.name),lower($3))>0) GROUP BY c.id ORDER BY c.name,c.id LIMIT $4",
+    [programId, communityId, search, limit],
   );
   res.json(
     r.rows.map((c) => ({

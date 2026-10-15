@@ -1,3 +1,4 @@
+import { catalogMetrics } from "./services/catalog-metrics.ts";
 import { pool, transaction } from "./db.ts";
 import type { Program, DataSource, YearData } from "../shared/contracts.ts";
 export async function catalogVersion() {
@@ -6,7 +7,7 @@ export async function catalogVersion() {
   );
   return r.rows[0]?.version || "sample-v1";
 }
-export async function catalog(): Promise<Program[]> {
+async function loadCatalog(): Promise<Program[]> {
   return transaction(async (client) => {
     await client.query(
       "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY",
@@ -25,28 +26,37 @@ export async function catalog(): Promise<Program[]> {
       "SELECT version FROM import_batches ORDER BY applied_at DESC LIMIT 1",
     );
     const version = versionRow.rows[0]?.version || "sample-v1";
+    const sourceMap = new Map<string, any[]>(),
+      yearMap = new Map<string, any[]>();
+    for (const row of sources.rows) {
+      const list = sourceMap.get(row.program_id) || [];
+      list.push(row);
+      sourceMap.set(row.program_id, list);
+    }
+    for (const row of years.rows) {
+      const list = yearMap.get(row.program_id) || [];
+      list.push(row);
+      yearMap.set(row.program_id, list);
+    }
     return result.rows.map((r) => {
-      const references: DataSource[] = sources.rows
-        .filter((s) => s.program_id === r.id)
-        .map((s) => ({
-          id: s.id,
-          title: s.title,
-          url: s.url,
-          publisher: s.publisher,
-          retrievedAt: s.retrieval_date,
-          notes: s.notes,
-        }));
-      const history: YearData[] = years.rows
-        .filter((y) => y.program_id === r.id)
-        .map((y) => ({
-          year: y.year,
-          rank: y.rank,
-          quota: y.quota,
-          tuition: y.tuition === null ? null : Number(y.tuition),
-          currency: y.currency,
-          source: y.source,
-          sourceUrl: y.source_url,
-        }));
+      const references: DataSource[] = (sourceMap.get(r.id) || []).map((s) => ({
+        id: s.id,
+        title: s.title,
+        url: s.url,
+        publisher: s.publisher,
+        retrievedAt: s.retrieval_date,
+        notes: s.notes,
+      }));
+      const history: YearData[] = (yearMap.get(r.id) || []).map((y) => ({
+        year: y.year,
+        rank: y.rank,
+        quota: y.quota,
+        tuition: y.tuition === null ? null : Number(y.tuition),
+        currency: y.currency,
+        source: y.source,
+        sourceUrl: y.source_url,
+      }));
+      const metrics = catalogMetrics(history);
       return {
         id: r.id,
         name: r.name,
@@ -58,18 +68,12 @@ export async function catalog(): Promise<Program[]> {
         scholarship: r.scholarship,
         description: r.description,
         subjects: r.subjects,
-        rank: r.rank ?? null,
-        quota: r.quota ?? null,
-        year: r.year ?? null,
+        ...metrics,
+        year: metrics.rankYear ?? r.year ?? null,
         isSample: r.is_sample,
         source: r.source || references[0]?.title || "Kaynak kaydı yok",
         sourceUrl: r.source_url || references[0]?.url || null,
         officialCode: r.official_code,
-        tuition:
-          r.tuition === null || r.tuition === undefined
-            ? null
-            : Number(r.tuition),
-        feeYear: r.tuition === null || r.tuition === undefined ? null : r.year,
         scholarshipPercent:
           r.scholarship_percent === null ? null : Number(r.scholarship_percent),
         sources: references,
@@ -78,4 +82,21 @@ export async function catalog(): Promise<Program[]> {
       };
     });
   });
+}
+
+let cached: { version: string; programs: Program[] } | undefined;
+let pending: Promise<Program[]> | undefined;
+export async function catalog(): Promise<Program[]> {
+  const version = await catalogVersion();
+  if (cached && cached.version === version) return cached.programs;
+  if (pending) return pending;
+  pending = loadCatalog()
+    .then((programs) => {
+      cached = { version: programs[0]?.catalogVersion || version, programs };
+      return programs;
+    })
+    .finally(() => {
+      pending = undefined;
+    });
+  return pending;
 }

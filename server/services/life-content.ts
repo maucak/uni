@@ -1,0 +1,91 @@
+import type { LifeArticle } from "../../shared/life.ts";
+const guide = "https://www.isparta.edu.tr/ogrencibilgilendirmerehberi";
+export const lifeCampus = {
+  id: "isubu",
+  name: "Isparta Uygulamalı Bilimler Üniversitesi",
+  city: "Isparta",
+};
+const base = {
+  url: guide,
+  sourceTitle: "İSUBÜ Öğrenci Bilgilendirme Rehberi",
+  checkedAt: "2026-10-15",
+  period: null,
+};
+export const lifeArticles: LifeArticle[] = [
+  {
+    ...base,
+    id: "obs",
+    title: "OBS ve öğrenci işlemleri",
+    topic: "İlk günler",
+    text: "Not, ders seçimi, kayıt yenileme ve staj başvuruları için OBS kullanılır. Giriş sorunu varsa OBS şifre yenileme adımını veya biriminin öğrenci işlerini kullan.",
+    keywords: ["obs", "öğrenci numarası", "şifre", "not", "ders seçimi"],
+  },
+  {
+    ...base,
+    id: "registration",
+    title: "Yeni kayıt ve e-kayıt",
+    topic: "İlk günler",
+    text: "Yeni kayıtta e-Devlet ve üniversitenin kayıt duyuruları esas alınır. E-kayıt yapılamayan programlar için yüz yüze işlem gerekebilir. Kendi programının belge koşullarını ve o yılın tarihlerini kontrol et.",
+    keywords: ["kayıt", "yerleştim", "belge", "e-devlet", "yeni öğrenci"],
+  },
+  {
+    ...base,
+    id: "calendar",
+    title: "Ders kaydı ve akademik takvim",
+    topic: "İlk günler",
+    text: "Ders kaydı ve ekle-sil işlemlerini akademik takvimdeki sürelerde takip et. Güncel duyurular OBS ve Öğrenci İşleri sayfasında yayımlanır. Bu rehber belirli bir dönem için son başvuru tarihi sunmaz.",
+    keywords: [
+      "takvim",
+      "ders kaydı",
+      "ekle sil",
+      "başvuru tarihi",
+      "kayıt yenileme",
+    ],
+  },
+  {
+    ...base,
+    id: "prep",
+    title: "Hazırlık ve muafiyet duyuruları",
+    topic: "Hazırlık",
+    text: "Bilgisayar Mühendisliğinin 2026–2027 duyurusunda, kabul edilen yabancı dil sınav belgesiyle hazırlık muafiyeti için belge ve dilekçe teslimi açıklanır. İlanın başvuru dönemi geçmiştir; yeni dönem için Yabancı Diller Yüksekokulunu kontrol et. Bu koşullar bütün bölümlere genellenemez.",
+    keywords: [
+      "hazırlık",
+      "muafiyet",
+      "ingilizce",
+      "yabancı dil",
+      "yeterlilik",
+      "sınav",
+    ],
+    url: "https://teknoloji.isparta.edu.tr/bilmuh/tr/haber/2026-2027-hazirlik-sinifi-yeterlilik-sinav-programi-hakkinda-onemli-duyuru-61854h.html",
+    sourceTitle: "İSUBÜ Bilgisayar Mühendisliği · Hazırlık duyurusu",
+    period: "2026–2027 · geçmiş başvuru duyurusu",
+  },
+  {
+    ...base,
+    id: "clubs",
+    title: "Öğrenci topluluklarını keşfet",
+    topic: "Kampüs yaşamı",
+    text: "Öğrenci rehberi, topluluklar için Sağlık Kültür ve Spor Daire Başkanlığının topluluk sayfasına yönlendirir. Katılım ve etkinlik bilgilerini ilgili topluluktan kontrol et.",
+    keywords: ["topluluk", "kulüp", "etkinlik", "sosyal", "arkadaş"],
+  },
+  {
+    ...base,
+    id: "rules",
+    title: "Yönerge ve yönetmeliklere ulaş",
+    topic: "İlk günler",
+    text: "Genel Sekreterlik sayfasında ders muafiyeti, intibak ve farklı öğrenci süreçlerine ait yönergeler listelenir. İşlemine uygun belgenin güncel sürümünü incele.",
+    keywords: ["yönetmelik", "yönerge", "intibak", "ders muafiyet"],
+    url: "https://genelsekreterlik.isparta.edu.tr/tr/anasayfa/yonergeler-17747s.html",
+    sourceTitle: "İSUBÜ Genel Sekreterlik · Yönergeler",
+  },
+  {
+    ...base,
+    id: "transport",
+    title: "Biriminin konumunu ve ulaşımı kontrol et",
+    topic: "Ulaşım",
+    text: "Resmî ulaşım sayfasını incele; gideceğin fakülte veya MYO'nun adresini ayrıca doğrula. Bu rehberde canlı sefer saati, rota süresi veya ücret verisi bulunmuyor.",
+    keywords: ["ulaşım", "otobüs", "kampüs", "adres", "nasıl giderim", "yol"],
+    url: "https://www.isparta.edu.tr/sayfa/5734/ulasim-bilgileri",
+    sourceTitle: "İSUBÜ · Ulaşım Bilgileri",
+  },
+];

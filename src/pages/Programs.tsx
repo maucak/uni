@@ -1,3 +1,4 @@
+import { educationLanguages } from "../../shared/contracts";
 import { useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import {
@@ -24,6 +25,7 @@ import type { AdvisorReply } from "../../shared/advisor";
 export default function Programs() {
   const [params, setParams] = useSearchParams();
   const query = params.toString();
+  const offset = Math.max(0, Number(params.get("offset")) || 0);
   const { user, notify } = useStore();
   const [advisorOpen, setAdvisorOpen] = useState(true),
     [undo, setUndo] = useState<{ before: string; after: string } | null>(null);
@@ -38,7 +40,7 @@ export default function Programs() {
     items: Program[];
     total: number;
     catalogVersion: string;
-  }>(`/programs?${query}`);
+  }>(`/programs?${query}&limit=24`);
   const { data: filters } = useLoad<{
     cities: string[];
     count: number;
@@ -117,7 +119,7 @@ export default function Programs() {
               onChange={(e) => set("dataKind", e.target.value)}
             >
               <option value="real">
-                Kaynaklı pilot ({filters?.realCount ?? "…"})
+                Gerçek program verileri ({filters?.realCount ?? "…"})
               </option>
               <option value="sample">Örnek geliştirme verisi</option>
               <option value="all">İkisini birlikte göster</option>
@@ -142,7 +144,7 @@ export default function Programs() {
               onChange={(e) => set("scoreType", e.target.value)}
             >
               <option value="">Tüm puan türleri</option>
-              {["SAY", "EA", "SÖZ", "DİL"].map((s) => (
+              {["SAY", "EA", "SÖZ", "DİL", "TYT"].map((s) => (
                 <option key={s}>{s}</option>
               ))}
             </select>
@@ -166,8 +168,9 @@ export default function Programs() {
               onChange={(e) => set("language", e.target.value)}
             >
               <option value="">Tüm diller</option>
-              <option>Türkçe</option>
-              <option>İngilizce</option>
+              {educationLanguages.map((language) => (
+                <option key={language}>{language}</option>
+              ))}
             </select>
           </label>
           <label>
@@ -179,6 +182,7 @@ export default function Programs() {
               <option value="">Tüm türler</option>
               <option>Devlet</option>
               <option>Vakıf</option>
+              <option>Yurt dışı</option>
             </select>
           </label>
           <details className="advanced-filters" open>
@@ -280,10 +284,39 @@ export default function Programs() {
           ) : (
             <Empty title="Bu filtrelere uygun program yok.">
               <p>
-                Pilot kapsamı sınırlıdır. Bir filtreyi kaldırabilir veya eksik
-                verili programları dahil edebilirsin.
+                Katalog seçilmiş üniversiteleri kapsar. Bir filtreyi
+                kaldırabilir veya eksik verili programları dahil edebilirsin.
               </p>
             </Empty>
+          )}
+          {!!data?.total && (
+            <nav className="section-heading" aria-label="Program sayfaları">
+              <button
+                className="button"
+                disabled={loading || offset === 0}
+                onClick={() => {
+                  const next = new URLSearchParams(params);
+                  next.set("offset", String(Math.max(0, offset - 24)));
+                  setParams(next);
+                }}
+              >
+                Önceki
+              </button>
+              <span>
+                {offset + 1}–{Math.min(offset + 24, data.total)} / {data.total}
+              </span>
+              <button
+                className="button"
+                disabled={loading || offset + 24 >= data.total}
+                onClick={() => {
+                  const next = new URLSearchParams(params);
+                  next.set("offset", String(offset + 24));
+                  setParams(next);
+                }}
+              >
+                Sonraki
+              </button>
+            </nav>
           )}
           <div className="catalog-version">
             Katalog sürümü: {data?.catalogVersion || "…"} ·{" "}

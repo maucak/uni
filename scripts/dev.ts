@@ -122,7 +122,11 @@ try {
     console.log("Yerel PostgreSQL hazır. Veriler var/postgres içinde kalıcı.");
   }
   await run("db:migrate");
-  if (database) {await run("db:seed");await run('catalog:pilot');}
+  if (database) {
+    await run("db:seed");
+    await run("catalog:pilot");
+    await run("catalog:osym");
+  }
   for (const script of ["dev:api", "dev:web"]) {
     const child = launch(script);
     child.once("error", (e) => {

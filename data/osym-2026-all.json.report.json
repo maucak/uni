@@ -1,0 +1,49 @@
+{
+  "tables": {
+    "3": {
+      "sourceRows": 9254,
+      "imported": 9254,
+      "unclassifiedRows": []
+    },
+    "4": {
+      "sourceRows": 12239,
+      "imported": 12239,
+      "unclassifiedRows": []
+    }
+  },
+  "unknownLocation": [
+    "İÇİŞLERİ BAKANLIĞI VE MİLLİ SAVUNMA BAKANLIĞI ADINA SAĞLIK BİLİMLERİ ÜNİVERSİTESİNDE EĞİTİM ALACAKLAR (Devlet Üniversitesi)",
+    "TÜRK-JAPON BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ (Devlet Üniversitesi)",
+    "İÇİŞLERİ BAKANLIĞI VE MİLLİ SAVUNMA BAKANLIĞI ADINA SAĞLIK BİLİMLERİ ÜNİVERSİTESİNDE EĞİTİM ALACAKLAR (Devlet Üniversitesi)"
+  ],
+  "records": 21493,
+  "institutions": 229,
+  "languages": {
+    "Türkçe": 17767,
+    "İngilizce": 3616,
+    "Arapça": 25,
+    "Almanca": 46,
+    "Rusça": 8,
+    "İspanyolca": 3,
+    "Bulgarca": 1,
+    "Ermenice": 1,
+    "Fransızca": 21,
+    "İtalyanca": 1,
+    "Boşnakça": 1,
+    "Çince": 1,
+    "Korece": 1,
+    "Türkçe-Rusça": 1
+  },
+  "scores": {
+    "TYT": 9254,
+    "EA": 3900,
+    "SAY": 5744,
+    "SÖZ": 1914,
+    "DİL": 681
+  },
+  "types": {
+    "Devlet": 12042,
+    "Yurt dışı": 1356,
+    "Vakıf": 8095
+  }
+}

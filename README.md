@@ -114,3 +114,15 @@ Uygulanmış migration dosyasını değiştirmeyin; yeni migration ekleyin. Çal
 ### Geliştirmede hızlı giriş
 
 npm run dev sırasında giriş sayfasındaki veya sol menüdeki **Geliştirme hesabıyla devam et** düğmesi, kalıcı deneme hesabıyla gerçek oturum açar. Profil ve tercih listeleri sonraki girişlerde korunur. Üretim istemcisinde düğme görünmez; sunucu yolu yalnızca dev:api başlatıcısında veya --dev-login bayrağıyla, NODE_ENV production değilken açılır.
+
+### Groq danışmanı
+
+Yerel `.env`: `AI_PROVIDER=groq`, `GROQ_MODEL=openai/gpt-oss-20b`, `GROQ_API_KEY` alanına kendi anahtarınız. Anahtar yalnızca sunucuda kullanılır. JSON şeması ve mevcut filtre onayı korunur; 20 saniye sınırı ve otomatik tekrar olmadan çalışır. Gemini ayarları korunur; `AI_PROVIDER=gemini` ile geri dönülebilir. Groq canlı yanıtı anahtar eklendikten sonra doğrulanmalıdır.
+
+### ÖSYM program kataloğu
+
+10 üniversiteden 637 gerçek lisans programı eklendi. Yerel geliştirme başlatıcısı katalog dosyasını otomatik uygular; elle aktarım `npm run catalog:osym`. 2025 başarı sırası ve 2026 genel kontenjanı farklı yıllardır. Kaynak ve yeniden üretim: `docs/osym-katalog.md`. Ücretler ve çoğu programın ayrıntılı ders içeriği henüz bilinmiyor.
+
+### Tam ÖSYM 2026 tabloları
+
+Güncel katalog Tablo-3 ve Tablo-4 içindeki 21.493 program kodlu kaydı kapsar: 9.254 önlisans (TYT), 12.239 lisans. Türkiye, KKTC ve yurt dışı seçenekleri; 14 dil, özel/burs/ortak programlar ayrı tutulur. `npm run catalog:osym` artık `data/osym-2026-all.json` dosyasını uygular. Kaynak sütunları program detayında açılır. Ücret ve ayrıntılı ders verileri bu aktarımın dışında kalır. Ayrıntı ve yeniden üretim: `docs/osym-katalog.md`. Kısa gerçek DB/API kontrolü: `node scripts/full-catalog-check.ts`.

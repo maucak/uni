@@ -54,16 +54,18 @@ export default function Method() {
       <section className="panel source-panel">
         <h2>Mevcut veri kaynağı</h2>
         <p>
-          Kaynaklı pilot iki gerçek ISUBÜ programı içerir. Türkçe program için
-          bölümün yayımladığı 2023–2025 yıllık sıralama ve kontenjanları
-          aktarılmıştır. İngilizce programın bu alanları henüz doğrulanmadığı
-          için boş bırakılmıştır. Ücretler bilinmiyor.
+          Gerçek katalog, ÖSYM 2026 Tablo-3 ve Tablo-4'teki 21.493 program
+          kaydını içerir; önlisans, lisans ve yurt dışı seçenekleri ayrıdır.
+          2025 başarı sıraları ve 2026 genel kontenjanları ayrı yıllarda
+          saklanır. Ücretler ve ayrıntılı ders içerikleri henüz tamamlanmadı.
+          Kapsam bu iki resmî tabloda yer alan kayıtlardır. ISUBÜ programlarının
+          önceki kaynaklı içerikleri korunur.
         </p>
         <p>
           Ayrı örnek katalogdaki 12 program sentetiktir. Varsayılan keşif gerçek
-          pilotu gösterir. Yeni dosyalar önizleme, alan doğrulama ve sürümlü içe
-          aktarma ile eklenir. YÖK Atlas için hazır API veya otomatik kullanım
-          izni varsayılmıyor.
+          kataloğu gösterir. Yeni dosyalar önizleme, alan doğrulama ve sürümlü
+          içe aktarma ile eklenir. YÖK Atlas için hazır API veya otomatik
+          kullanım izni varsayılmıyor.
         </p>
         <Link className="button light" to="/veri-kaynaklari">
           Kaynak ve sürüm kayıtları

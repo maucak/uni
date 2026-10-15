@@ -1,3 +1,11 @@
+# Güncel ek — 15 Ekim 2026, tam tablo aktarımı
+
+ÖSYM 2026 Tablo-3 ve Tablo-4 içindeki 21.493 resmî program kodlu kaydın tümü uygulandı: 9.254 önlisans, 12.239 lisans. Önceki 637 sayısı tarihsel aşamadır. Dil/burs/özel seçenekler ve KKTC/yurt dışı ayrımı korundu. Başarı sırası ve kontenjan yılları ayrı; tüm ham sütunlar program detayında açılır. Ücretler, ayrıntılı ders içerikleri ve tüm geçmiş yıllar henüz tamamlanmadı. Ayrıntı: [katalog](osym-katalog.md).
+
+# Güncel ek — 15 Ekim 2026
+
+ÖSYM 2026 Tablo-4 aktarımı tamamlandı: 10 üniversite, 637 gerçek program. Ayrıntı: [ÖSYM kataloğu](osym-katalog.md). Kaynaklı sıra yılı (2025) ve kontenjan yılı (2026) ayrı tutulur. Tip kontrolü, üretim derlemesi, 3 ölçüt/yıl testi ve gerçek API kontrolü başarılı; idempotent yeniden aktarım kayıt çoğaltmadı. Aşağıdaki 14 Ekim notları tarihsel kayıttır; iki program ifadesi güncel değildir.
+
 # Geliştirme durumu
 
 Tarih: 14 Ekim 2026. Güncel durum: katalog ve öneri ikinci aşaması eklendi; Gemini canlı yanıtı henüz doğrulanmadı. Ayrıntı: [ikinci aşama](ikinci-asama.md).

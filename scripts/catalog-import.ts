@@ -17,7 +17,9 @@ console.log(
       version: report.manifest?.version,
       records: report.manifest?.programs.length,
       errors: report.errors,
-      warnings: report.warnings,
+      warningCount: report.warnings.length,
+      warnings: report.warnings.slice(0, 10),
+      warningDetails: "var/import-reports/latest.json",
     },
     null,
     2,
@@ -34,7 +36,11 @@ if (!report.manifest) {
   await useLocalDatabase();
   const { pool, transaction } = await import("../server/db.ts");
   try {
-    const result = await transaction((c) => applyManifest(c, report.manifest!));
+    const result = await transaction((c) =>
+      applyManifest(c, report.manifest!, (done, total) =>
+        console.log(`Aktarım: ${done}/${total}`),
+      ),
+    );
     console.log(JSON.stringify(result));
   } finally {
     await pool.end();

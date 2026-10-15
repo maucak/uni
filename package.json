@@ -19,7 +19,8 @@
     "test": "node --test tests/*.test.ts",
     "test:integration": "node scripts/smoke.ts",
     "catalog:import": "node scripts/catalog-import.ts",
-    "db:update-local": "node scripts/database-update.ts"
+    "db:update-local": "node scripts/database-update.ts",
+    "catalog:osym": "node scripts/catalog-import.ts data/osym-2026-all.json --apply"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",

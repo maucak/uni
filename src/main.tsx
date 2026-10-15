@@ -5,6 +5,7 @@ import { Provider, useStore } from "./lib/store";
 import { Layout } from "./components/Layout";
 import { Loading, ErrorBox } from "./components/ui";
 import Home from "./pages/Home";
+import Campus from "./pages/Campus";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Programs from "./pages/Programs";
@@ -31,6 +32,7 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
+            <Route path="kampus" element={<Campus />} />
             <Route path="giris" element={<Auth />} />
             <Route path="kayit" element={<Auth />} />
             <Route

@@ -91,13 +91,13 @@ export function SampleNotice({
         ? "Örnek geliştirme verisi"
         : kind === "all"
           ? "Karışık katalog"
-          : "Kaynaklı pilot katalog"}{" "}
+          : "Gerçek program verileri"}{" "}
       <span>
         {kind === "sample"
           ? "Üniversite adları ve sayısal değerler sentetiktir; resmî tercih verisi değildir."
           : kind === "all"
             ? "Kaynaklı ve örnek programlar birlikte gösteriliyor. Her kaydın türünü kontrol et."
-            : "Pilot kapsamı sınırlıdır. Eksik ücret ve sıralamalar bilinmiyor olarak gösterilir."}
+            : "ÖSYM 2026 önlisans ve lisans tabloları. Başarı sırası 2025, genel kontenjan 2026 yılına aittir; eksik alanlar bilinmiyor olarak gösterilir."}
       </span>
     </div>
   );

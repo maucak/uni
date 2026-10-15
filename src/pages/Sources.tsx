@@ -63,9 +63,10 @@ export default function Sources() {
               </div>
             ))}
             <p>
-              Program sayısı ilgili dosyadaki kayıt sayısıdır; bütün Türkiye
-              kataloğu değildir. Sürüm dosyaları önizleme ve doğrulama
-              sonrasında işlem bütünlüğüyle uygulanır.
+              Program sayısı ilgili aktarım dosyasındaki kayıt sayısıdır;
+              sürümleri toplayarak toplam program sayısı hesaplanmaz. Sürüm
+              dosyaları önizleme ve doğrulama sonrasında işlem bütünlüğüyle
+              uygulanır.
             </p>
           </section>
         </>
@@ -73,10 +74,11 @@ export default function Sources() {
       <section className="panel">
         <h2>Veriyi nasıl yorumlamalı?</h2>
         <p>
-          Pilot, resmî bölüm sayfalarından sınırlı elle derlenmiş alanlar
-          içerir. Erişim tarihi veri yılı değildir. Yıllık sıralama ve ücretler
-          kendi yıllarıyla gösterilir; eksik değerler boş bırakılır. YÖK Atlas
-          için otomatik kullanım izni veya hazır API varsayılmadı.
+          Katalog, ÖSYM 2026 Tablo-3 ve Tablo-4 aktarımı ile resmî bölüm
+          sayfalarından derlenen ek bilgileri içerir. Erişim tarihi veri yılı
+          değildir. 2025 başarı sırası, 2026 genel kontenjanı ve ücretler kendi
+          yıllarıyla gösterilir; eksik değerler boş bırakılır. YÖK Atlas için
+          otomatik kullanım izni veya hazır API varsayılmadı.
         </p>
         <p>
           Program metinleri kısa editoryal özetlerdir. Ders ve kariyer alanı

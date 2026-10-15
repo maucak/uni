@@ -49,6 +49,7 @@ api.get("/catalog/filters", async (_req, res) => {
   const p = await catalog();
   res.json({
     cities: [...new Set(p.map((p) => p.city))].sort(),
+    languages: [...new Set(p.map((p) => p.language))].sort(),
     count: p.length,
     sampleCount: p.filter((p) => p.isSample).length,
     realCount: p.filter((p) => !p.isSample).length,
@@ -68,7 +69,24 @@ api.get("/programs/:id", async (req, res) => {
   const id = z.uuid().parse(req.params.id);
   const program = (await catalog()).find((p) => p.id === id);
   if (!program) fail(404, "NOT_FOUND", "Program bulunamadı.");
-  res.json(program);
+  const admission = await pool.query(
+    "SELECT year,table_number,source_row,details FROM program_admissions WHERE program_id=$1 ORDER BY year DESC LIMIT 1",
+    [id],
+  );
+  const row = admission.rows[0];
+  res.json({
+    ...program,
+    ...(row
+      ? {
+          admissionData: {
+            year: row.year,
+            table: row.table_number,
+            row: row.source_row,
+            columns: row.details,
+          },
+        }
+      : {}),
+  });
 });
 api.post("/recommendations", requireUser, async (req, res) => {
   const state = searchFromParams(

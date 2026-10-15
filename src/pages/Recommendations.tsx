@@ -96,7 +96,7 @@ export default function Recommendations() {
         <label>
           Öneri veri kapsamı
           <select value={kind} onChange={(e) => setKind(e.target.value)}>
-            <option value="real">Kaynaklı pilot</option>
+            <option value="real">Gerçek program verileri</option>
             <option value="sample">Örnek geliştirme verisi</option>
           </select>
         </label>
