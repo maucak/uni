@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { pool } from "../db.ts";
 import { fail } from "../errors.ts";
+import { buildNotification, sanitizePayload } from "./notification-rules.ts";
+export { buildNotification, sanitizePayload };
 import {
   notificationKinds,
   notificationPayloadSchema,
@@ -11,34 +13,6 @@ import {
 /**
  * Payload'ı beyaz listeye indirger: yalnızca kimlik ve en çok 80 karakterlik başlık.
  * Tanımsız alanlar (ör. mesaj gövdesi, belge bilgisi) sessizce atılır.
- */
-export function sanitizePayload(payload: unknown) {
-  const parsed = notificationPayloadSchema.parse(payload ?? {});
-  return Object.fromEntries(
-    Object.entries(parsed).filter(([, v]) => v !== undefined),
-  );
-}
-
-/** Saf karar: bildirim oluşturulacaksa satırı döndürür, yoksa null (kendi eylemi, geçersiz tür). */
-export function buildNotification(
-  userId: string,
-  kind: string,
-  payload: unknown,
-  actorId?: string | null,
-) {
-  if (!userId || (actorId && actorId === userId)) return null;
-  if (!(notificationKinds as readonly string[]).includes(kind)) return null;
-  return {
-    id: randomUUID(),
-    userId,
-    kind: kind as NotificationKind,
-    payload: sanitizePayload(payload),
-  };
-}
-
-/**
- * Bildirim üretir. actorId verilirse ve alıcıyla aynıysa bildirim yazılmaz.
- * Bildirim hatası ana işlemi bozmaz; yalnızca kısa bir log düşer.
  */
 export async function notify(
   userId: string,

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   buildNotification,
   sanitizePayload,
-} from "../server/services/notifications.ts";
+} from "../server/services/notification-rules.ts";
 import { notificationKinds } from "../shared/contracts.ts";
 
 const qid = "11111111-1111-4111-8111-111111111111";
