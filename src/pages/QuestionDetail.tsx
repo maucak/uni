@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ThumbsUp } from "lucide-react";
+import { ArrowLeft, ThumbsUp, CheckCircle2 } from "lucide-react";
 import { useLoad } from "../lib/useLoad";
 import { api, json } from "../lib/api";
 import { useStore } from "../lib/store";
@@ -10,7 +10,7 @@ export default function QuestionDetail() {
   const { id } = useParams();
   const { user } = useStore();
   const { data, loading, error, reload } = useLoad<
-    Question & { answers: Answer[] }
+    Question & { answers: Answer[]; isOwner: boolean }
   >(`/questions/${id}`);
   const [body, setBody] = useState(""),
     [actionError, setActionError] = useState(""),
@@ -40,6 +40,18 @@ export default function QuestionDetail() {
       setActionError((e as Error).message);
     }
   }
+  async function accept(a: Answer) {
+    setActionError("");
+    try {
+      await api(
+        `/questions/${id}/accepted-answer`,
+        a.accepted ? { method: "DELETE" } : json("PUT", { answerId: a.id }),
+      );
+      reload();
+    } catch (e) {
+      setActionError((e as Error).message);
+    }
+  }
   if (loading) return <Loading />;
   if (error) return <ErrorBox message={error} retry={reload} />;
   if (!data) return null;
@@ -49,7 +61,7 @@ export default function QuestionDetail() {
         className="back-link"
         to={`/topluluklar?communityId=${data.communityId}`}
       >
-        <ArrowLeft size={16} /> Topluluklara dön
+        <ArrowLeft size={16} /> Topluluğa dön
       </Link>
       <article className="panel question-detail">
         <span className="badge">{data.communityName}</span>
@@ -69,6 +81,11 @@ export default function QuestionDetail() {
       <div className="answer-list">
         {data.answers.map((a) => (
           <article className="panel" key={a.id}>
+            {a.accepted && (
+              <span className="badge">
+                <CheckCircle2 size={14} /> Soru sahibinin kabul ettiği yanıt
+              </span>
+            )}
             <div className="answer-author">
               <span className="avatar">{a.author[0]}</span>
               <strong>{a.author}</strong>
@@ -82,6 +99,12 @@ export default function QuestionDetail() {
             >
               <ThumbsUp size={16} /> Faydalı ({a.votes})
             </button>
+            {data.isOwner && (
+              <button className="text-button" onClick={() => accept(a)}>
+                <CheckCircle2 size={16} />{" "}
+                {a.accepted ? "Kabulü kaldır" : "Kabul edilen yanıt yap"}
+              </button>
+            )}
           </article>
         ))}
       </div>

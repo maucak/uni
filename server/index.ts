@@ -3,6 +3,7 @@ import authRoutes from "./routes/auth.ts";
 import catalogRoutes from "./routes/catalog.ts";
 import preferenceRoutes from "./routes/preferences.ts";
 import communityRoutes from "./routes/community.ts";
+import experienceRoutes from "./routes/experiences.ts";
 import advisorRoutes from "./routes/advisor.ts";
 import lifeRoutes from "./routes/life.ts";
 import "dotenv/config";
@@ -62,6 +63,7 @@ api.use(
   catalogRoutes,
   preferenceRoutes,
   communityRoutes,
+  experienceRoutes,
   advisorRoutes,
   lifeRoutes,
   sourceManagementRoutes,

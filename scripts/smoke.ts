@@ -190,6 +190,106 @@ try {
       .votes,
     1,
   );
+  // 015: kabul edilen yanıt yalnızca soru sahibinden; Türkçe tam metin arama.
+  await request(
+    `/questions/${q.id}/accepted-answer`,
+    "PUT",
+    { answerId: answer.id },
+    b,
+    403,
+  );
+  await request(
+    `/questions/${q.id}/accepted-answer`,
+    "PUT",
+    { answerId: answer.id },
+    a,
+  );
+  const accepted = (await request(`/questions/${q.id}`, "GET", undefined, a))
+    .data;
+  assert.equal(accepted.acceptedAnswerId, answer.id);
+  assert.equal(accepted.answers[0].accepted, true);
+  const found = (
+    await request(
+      `/questions?${new URLSearchParams({ communityId: communities[0].id, q: "otomatik entegrasyon" })}`,
+    )
+  ).data;
+  assert(found.some((x: any) => x.id === q.id && x.acceptedAnswerId));
+  const tagged = (
+    await request(
+      "/questions",
+      "POST",
+      {
+        communityId: communities[0].id,
+        title: "Etiketli yanıtsız test sorusu",
+        body: "Bu soru etiket filtresi ve yanıtsız sıralaması testi içindir.",
+        tags: [`t-${prefix.slice(0, 8)}`],
+      },
+      b,
+      201,
+    )
+  ).data;
+  const byTag = (
+    await request(`/questions?tag=t-${prefix.slice(0, 8)}&sort=unanswered`)
+  ).data;
+  assert.deepEqual(
+    byTag.map((x: any) => x.id),
+    [tagged.id],
+  );
+  await db.query("UPDATE questions SET status='hidden' WHERE id=$1", [
+    tagged.id,
+  ]);
+  assert.equal(
+    (await request(`/questions?tag=t-${prefix.slice(0, 8)}`)).data.length,
+    0,
+  );
+  await request(`/questions/${tagged.id}`, "GET", undefined, undefined, 404);
+  const university = (await request("/communities?kind=university&limit=1"))
+    .data[0];
+  assert.equal(university.kind, "university");
+  assert(university.universityId);
+  // 015: deneyimler. Aday deneyim yazamaz; yazar durumu beyan edilen rolden gelir.
+  const experience = {
+    communityId: university.id,
+    topic: "kampus",
+    experienceYear: 2025,
+    title: "Entegrasyon testi deneyimi",
+    body: "Bu metin yalnızca otomatik entegrasyon testi için oluşturulmuştur.",
+  };
+  await request("/experiences", "POST", experience, a, 403);
+  await request("/me/profile", "PUT", { ...profile, role: "student" }, a);
+  const exp = (await request("/experiences", "POST", experience, a, 201)).data;
+  const listed = (
+    await request(`/experiences?communityId=${university.id}`)
+  ).data.find((e: any) => e.id === exp.id);
+  assert.equal(listed.authorStatus, "student");
+  assert.equal(listed.experienceYear, 2025);
+  await request(`/experiences/${exp.id}/vote`, "PUT", undefined, a, 400);
+  await request(`/experiences/${exp.id}/vote`, "PUT", undefined, b);
+  await request(`/experiences/${exp.id}/vote`, "PUT", undefined, b, 409);
+  await request(
+    `/experiences/${exp.id}`,
+    "PUT",
+    { title: "Başkasının düzenlemesi" },
+    b,
+    403,
+  );
+  await request(`/experiences/${exp.id}`, "DELETE", undefined, b, 403);
+  const edited = (
+    await request(
+      `/experiences/${exp.id}`,
+      "PUT",
+      { title: "Düzenlenmiş test deneyimi" },
+      a,
+    )
+  ).data;
+  assert.equal(edited.title, "Düzenlenmiş test deneyimi");
+  assert.equal(edited.votes, 1);
+  await request(`/experiences/${exp.id}`, "DELETE", undefined, a, 204);
+  assert(
+    !(await request(`/experiences?communityId=${university.id}`)).data.some(
+      (e: any) => e.id === exp.id,
+    ),
+  );
   await request("/auth/logout", "POST", {}, a, 204);
   assert.equal((await request("/me", "GET", undefined, a)).data, null);
   const login = await request("/auth/login", "POST", {
@@ -201,10 +301,21 @@ try {
   ).data[0];
   assert.equal(persisted.items[0].note, "Kalıcı araştırma notu");
   console.log(
-    "PASS: hesap/profil, filtre/öneri, kalıcılık, sahiplik, sıra çakışması, CSRF, soru/yanıt, yinelenen oy ve oturum iptali.",
+    "PASS: hesap/profil, filtre/öneri, kalıcılık, sahiplik, sıra çakışması, CSRF, soru/yanıt, yinelenen oy, kabul edilen yanıt, Türkçe arama, etiket/gizli içerik, deneyim oy/sahiplik ve oturum iptali.",
   );
 } finally {
   if (userIds.length) {
+    await db.query(
+      "DELETE FROM experience_votes WHERE user_id=ANY($1::uuid[])",
+      [userIds],
+    );
+    await db.query("DELETE FROM experiences WHERE author_id=ANY($1::uuid[])", [
+      userIds,
+    ]);
+    await db.query(
+      "UPDATE questions SET accepted_answer_id=NULL WHERE author_id=ANY($1::uuid[])",
+      [userIds],
+    );
     await db.query("DELETE FROM answers WHERE author_id=ANY($1::uuid[])", [
       userIds,
     ]);
