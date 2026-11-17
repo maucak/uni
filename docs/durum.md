@@ -1,3 +1,5 @@
+> **Tarihsel kayıt (14–15 Ekim 2026).** Güncel durum için [YOL-HARITASI.md](YOL-HARITASI.md).
+
 # Güncel ek — 15 Ekim 2026, tam tablo aktarımı
 
 ÖSYM 2026 Tablo-3 ve Tablo-4 içindeki 21.493 resmî program kodlu kaydın tümü uygulandı: 9.254 önlisans, 12.239 lisans. Önceki 637 sayısı tarihsel aşamadır. Dil/burs/özel seçenekler ve KKTC/yurt dışı ayrımı korundu. Başarı sırası ve kontenjan yılları ayrı; tüm ham sütunlar program detayında açılır. Ücretler, ayrıntılı ders içerikleri ve tüm geçmiş yıllar henüz tamamlanmadı. Ayrıntı: [katalog](osym-katalog.md).

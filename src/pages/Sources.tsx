@@ -1,7 +1,19 @@
+import { Link } from "react-router-dom";
 import { ExternalLink, Database } from "lucide-react";
 import { useLoad } from "../lib/useLoad";
 import { PageHeading, Loading, ErrorBox } from "../components/ui";
 export default function Sources() {
+  const management = useLoad<{ allowed: boolean }>("/source-management/access");
+  const life = useLoad<{
+    items: {
+      url: string;
+      title: string;
+      scope: string;
+      checked_at: string;
+      documents: number;
+      chunks: number;
+    }[];
+  }>("/life/sources");
   const { data, loading, error, reload } = useLoad<{
     sources: {
       id: string;
@@ -18,8 +30,46 @@ export default function Sources() {
       <PageHeading
         eyebrow="VERİNİN İZİNİ SÜR"
         title="Kaynaklar ve katalog sürümleri."
+        action={
+          management.data?.allowed ? (
+            <Link className="button secondary" to="/kaynak-yonetimi">
+              Kaynak yönetimi
+            </Link>
+          ) : undefined
+        }
         description="Hangi bilginin nereden geldiğini, ne zaman kontrol edildiğini ve hangi sürümle aktarıldığını incele."
       />
+      <section className="panel">
+        <h2>Yaşam rehberi ve danışman kaynakları</h2>
+        <p>
+          Kontrol tarihi, bilginin o tarihte yürürlükte olduğunu tek başına
+          göstermez. Cevaplarda kaynak belgesinin birim ve dönem koşullarını da
+          kontrol et.
+        </p>
+        {life.error && <ErrorBox message={life.error} retry={life.reload} />}
+        <div className="rag-source-list">
+          {life.data?.items.map((s) => (
+            <div key={s.url}>
+              <a href={s.url} target="_blank" rel="noreferrer">
+                {s.title} <ExternalLink size={13} />
+              </a>
+              <small>
+                {s.scope === "national"
+                  ? "Türkiye geneli"
+                  : s.scope === "sdu"
+                    ? "SDÜ"
+                    : s.scope === "pau"
+                      ? "PAÜ"
+                      : s.scope === "akdeniz"
+                        ? "Akdeniz Üniversitesi"
+                        : "İSUBÜ"}{" "}
+                · Son kontrol:{" "}
+                {new Date(s.checked_at).toLocaleDateString("tr-TR")}
+              </small>
+            </div>
+          ))}
+        </div>
+      </section>
       {loading ? (
         <Loading />
       ) : error ? (

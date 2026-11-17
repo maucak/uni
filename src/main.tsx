@@ -1,3 +1,4 @@
+import SourceManagement from "./pages/SourceManagement";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
@@ -6,6 +7,7 @@ import { Layout } from "./components/Layout";
 import { Loading, ErrorBox } from "./components/ui";
 import Home from "./pages/Home";
 import Campus from "./pages/Campus";
+import LifeAdvisor from "./pages/LifeAdvisor";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Programs from "./pages/Programs";
@@ -33,6 +35,7 @@ function App() {
           <Route element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="kampus" element={<Campus />} />
+            <Route path="danisman" element={<LifeAdvisor />} />
             <Route path="giris" element={<Auth />} />
             <Route path="kayit" element={<Auth />} />
             <Route
@@ -66,6 +69,14 @@ function App() {
             <Route path="sorular/:id" element={<QuestionDetail />} />
             <Route path="yontem" element={<Method />} />
             <Route path="veri-kaynaklari" element={<Sources />} />
+            <Route
+              path="kaynak-yonetimi"
+              element={
+                <Protected>
+                  <SourceManagement />
+                </Protected>
+              }
+            />
             <Route
               path="*"
               element={

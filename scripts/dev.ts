@@ -126,8 +126,9 @@ try {
     await run("db:seed");
     await run("catalog:pilot");
     await run("catalog:osym");
+    await run("rag:index:local");
   }
-  for (const script of ["dev:api", "dev:web"]) {
+  for (const script of ["dev:api", "dev:web", "sources:worker"]) {
     const child = launch(script);
     child.once("error", (e) => {
       console.error(e.message);

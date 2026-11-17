@@ -3,6 +3,8 @@
 Kişiselleştirilmiş Üniversite Tercih Öneri Sistemi ve Danışma Platformu.
 React + TypeScript, Node.js API ve PostgreSQL ile geliştirilen bitirme projesi.
 
+**Geliştiriciler için:** önce [CONTRIBUTING.md](CONTRIBUTING.md), güncel durum ve iş bölümü için [docs/YOL-HARITASI.md](docs/YOL-HARITASI.md).
+
 Bu depo devam eden uygulamadır. Tam ürün kapsamı [proje planında](docs/proje-plani.md), gerçek geliştirme durumu [durum raporunda](docs/durum.md) bulunur.
 
 ## Yerel kurulum
@@ -87,7 +89,9 @@ Danışman mesajı ve sınırlı tercih/program bağlamı Gemini'ye gider; ad/e-
 | `npm run dev` | PostgreSQL + migration + API + Vite |
 | `npm run build` | TypeScript kontrolü ve istemci üretim derlemesi |
 | `npm run typecheck` | TypeScript kontrolü |
-| `npm test` | Öneri algoritması davranış testleri |
+| `npm test` | Birim ve davranış testleri |
+| `npm run format` | Kodu Prettier ile biçimlendir |
+| `npm run check` | PR öncesi: typecheck + biçim + test |
 | `npm run test:integration` | Çalışan yerel servislerde kritik API akışları |
 | `npm run db:migrate` | DATABASE_URL üzerinde migration |
 | `npm run db:seed` | Sentetik geliştirme kataloğu |
@@ -126,3 +130,7 @@ Yerel `.env`: `AI_PROVIDER=groq`, `GROQ_MODEL=openai/gpt-oss-20b`, `GROQ_API_KEY
 ### Tam ÖSYM 2026 tabloları
 
 Güncel katalog Tablo-3 ve Tablo-4 içindeki 21.493 program kodlu kaydı kapsar: 9.254 önlisans (TYT), 12.239 lisans. Türkiye, KKTC ve yurt dışı seçenekleri; 14 dil, özel/burs/ortak programlar ayrı tutulur. `npm run catalog:osym` artık `data/osym-2026-all.json` dosyasını uygular. Kaynak sütunları program detayında açılır. Ücret ve ayrıntılı ders verileri bu aktarımın dışında kalır. Ayrıntı ve yeniden üretim: `docs/osym-katalog.md`. Kısa gerçek DB/API kontrolü: `node scripts/full-catalog-check.ts`.
+
+## Kaynaklı öğrenci danışmanı
+
+Yerel model kurulumu, kaynak yenileme ve kapsam sınırları: [RAG işletim notları](docs/rag.md).

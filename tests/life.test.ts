@@ -1,21 +1,30 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { retrieveLife } from "../server/services/life-retrieval.ts";
+import snapshot from "../data/life-knowledge.json" with { type: "json" };
 import { defaultProfile, profileSchema } from "../shared/contracts.ts";
-test("Turkish preparation question retrieves dated, department-specific evidence", () => {
-  const results = retrieveLife("Hazırlık muafiyet sınavı");
-  assert.equal(results[0].id, "prep");
-  assert.match(results[0].period!, /geçmiş/);
-  assert.match(results[0].text, /bütün bölümlere genellenemez/);
+test("source snapshots contain unique IDs, readable Turkish and source locators", () => {
+  const ids = snapshot.articles.map((a) => a.id);
+  assert.equal(new Set(ids).size, ids.length);
+  assert.ok(
+    snapshot.articles.every(
+      (a) => a.url.startsWith("https://") && a.checkedAt && a.text,
+    ),
+  );
+  assert.ok(
+    snapshot.articles.every(
+      (a) =>
+        !/&(?:#x[0-9a-f]+|#\d+|uuml|ccedil|ouml);/i.test(
+          a.title + " " + a.text,
+        ),
+    ),
+  );
+  assert.ok(snapshot.articles.some((a) => "page" in a && Number(a.page) > 0));
 });
-test("unknown topic does not silently return unrelated guide content", () => {
-  assert.deepEqual(retrieveLife("Kuantum optiği laboratuvarları"), []);
-  assert.equal(retrieveLife("OBS şifremi unuttum")[0].id, "obs");
-});
-test("old profiles receive defaults; new student fields survive validation", () => {
-  const { studentCity, campus, studyStage, ...old } = defaultProfile;
+test("old profiles receive defaults and student fields survive validation", () => {
+  const { studentCity, campus, studyStage, lifeSteps, ...old } = defaultProfile;
   const parsed = profileSchema.parse({ ...old, displayName: "Öğrenci" });
   assert.equal(parsed.studentCity, "");
+  assert.deepEqual(parsed.lifeSteps, []);
   const student = profileSchema.parse({
     ...parsed,
     role: "student",
