@@ -1,5 +1,6 @@
 import { DevLogin } from "./DevLogin";
 import { useState } from "react";
+import { VerifyBanner } from "./VerifyBanner";
 import {
   NavLink,
   Link,
@@ -164,6 +165,7 @@ export function Layout() {
           </div>
         </div>
         <main>
+          <VerifyBanner />
           <Outlet />
         </main>
         <footer className="footer">

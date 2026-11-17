@@ -72,7 +72,13 @@ export const defaultProfile: Profile = {
   studyStage: "new",
   lifeSteps: [],
 };
-export type User = { id: string; email: string; profile: Profile };
+// profile.role kullanıcının kendi beyanıdır; doğrulanmış rozet anlamına gelmez.
+export type User = {
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  profile: Profile;
+};
 export type Program = {
   id: string;
   name: string;

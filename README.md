@@ -42,6 +42,7 @@ Dış veritabanına otomatik örnek veri yüklenmez. Başlatıcı `.env` içinde
 
 - Ayrı sayfalar, responsive ortak düzen ve mobil menü.
 - Kayıt/giriş/çıkış; scrypt parola hash'i, HttpOnly oturum çerezi, JWT ve iptal edilebilir veritabanı oturumu.
+- E-posta doğrulama (24 saat), parola sıfırlama (30 dakika) ve parola değiştirme; belirteçler sha256 özetiyle tek kullanımlık saklanır, sıfırlama/değiştirme oturumları kapatır. E-postalar gönderilmez, geliştirmede `var/mail/` altına yazılır. Profildeki aday/öğrenci/mezun seçimi beyandır.
 - Kalıcı profil, ilgi alanları, şehir/dil öncelikleri ve ağırlıklar.
 - Program keşfi, filtrelerin URL'de saklanması, program ayrıntısı ve dört programa kadar karşılaştırma.
 - Birden fazla özel tercih listesi, kalıcı notlar, sıra değiştirme ve revision çakışması kontrolü.

@@ -106,6 +106,11 @@ export default function Auth() {
             <ArrowRight size={18} />
           </button>
         </form>
+        {!register && (
+          <p className="auth-switch">
+            <Link to="/parola-sifirla">Parolamı unuttum</Link>
+          </p>
+        )}
         <p className="auth-switch">
           {register ? "Zaten hesabın var mı?" : "İlk kez mi buradasın?"}{" "}
           <Link to={register ? "/giris" : "/kayit"}>
@@ -113,8 +118,8 @@ export default function Auth() {
           </Link>
         </p>
         <small className="quiet">
-          Geliştirme sürümü: e-posta doğrulama ve hesap kurtarma henüz
-          eklenmedi. Gerçek öğrenci belgelerini bu sürüme yükleme.
+          Geliştirme sürümü: e-postalar gönderilmez, sunucuda var/mail klasörüne
+          yazılır. Gerçek öğrenci belgelerini bu sürüme yükleme.
         </small>
       </section>
     </div>

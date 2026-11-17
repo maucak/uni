@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useStore } from "../lib/store";
 import { api, json } from "../lib/api";
 import { PageHeading, ErrorBox } from "../components/ui";
+import { PasswordChange } from "../components/PasswordChange";
 import type { Profile as ProfileType, User } from "../../shared/contracts";
 export default function Profile() {
   const { user, setUser, notify } = useStore();
@@ -77,7 +78,7 @@ export default function Profile() {
               />
             </label>
             <label>
-              Durumun
+              Durumun <span className="quiet">(beyan)</span>
               <select
                 value={profile.role}
                 onChange={(e) =>
@@ -88,6 +89,9 @@ export default function Profile() {
                 <option value="student">Üniversite öğrencisi</option>
                 <option value="graduate">Mezun</option>
               </select>
+              <small>
+                Bu senin beyanındır; doğrulanmış öğrenci rozeti vermez.
+              </small>
             </label>
             {profile.role === "candidate" && (
               <>
@@ -354,6 +358,7 @@ export default function Profile() {
           </button>
         </div>
       </form>
+      <PasswordChange />
     </>
   );
 }

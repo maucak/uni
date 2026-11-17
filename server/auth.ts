@@ -31,6 +31,7 @@ export function userFromRow(row: any): User {
   return {
     id: row.id,
     email: row.email,
+    emailVerified: Boolean(row.email_verified_at),
     profile: profileSchema.parse(row.profile),
   };
 }
@@ -87,6 +88,24 @@ export function requireUser(_req: Request, res: Response, next: NextFunction) {
     return res.status(401).json({
       code: "AUTH_REQUIRED",
       message: "Bu işlem için giriş yapmalısın.",
+    });
+  next();
+}
+/** Doğrulanmış e-posta gerektiren işlemler için (öğrenci başvurusu, mentorluk). requireUser'dan sonra kullanılır. */
+export function requireVerifiedEmail(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  if (!res.locals.user)
+    return res.status(401).json({
+      code: "AUTH_REQUIRED",
+      message: "Bu işlem için giriş yapmalısın.",
+    });
+  if (!res.locals.user.emailVerified)
+    return res.status(403).json({
+      code: "EMAIL_NOT_VERIFIED",
+      message: "Bu işlem için önce e-posta adresini doğrulamalısın.",
     });
   next();
 }

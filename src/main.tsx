@@ -9,6 +9,8 @@ import Home from "./pages/Home";
 import Campus from "./pages/Campus";
 import LifeAdvisor from "./pages/LifeAdvisor";
 import Auth from "./pages/Auth";
+import VerifyEmail from "./pages/VerifyEmail";
+import PasswordReset from "./pages/PasswordReset";
 import Profile from "./pages/Profile";
 import Programs from "./pages/Programs";
 import ProgramDetail from "./pages/ProgramDetail";
@@ -38,6 +40,8 @@ function App() {
             <Route path="danisman" element={<LifeAdvisor />} />
             <Route path="giris" element={<Auth />} />
             <Route path="kayit" element={<Auth />} />
+            <Route path="eposta-dogrula" element={<VerifyEmail />} />
+            <Route path="parola-sifirla" element={<PasswordReset />} />
             <Route
               path="profil"
               element={
