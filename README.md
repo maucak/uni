@@ -126,3 +126,7 @@ Yerel `.env`: `AI_PROVIDER=groq`, `GROQ_MODEL=openai/gpt-oss-20b`, `GROQ_API_KEY
 ### Tam ÖSYM 2026 tabloları
 
 Güncel katalog Tablo-3 ve Tablo-4 içindeki 21.493 program kodlu kaydı kapsar: 9.254 önlisans (TYT), 12.239 lisans. Türkiye, KKTC ve yurt dışı seçenekleri; 14 dil, özel/burs/ortak programlar ayrı tutulur. `npm run catalog:osym` artık `data/osym-2026-all.json` dosyasını uygular. Kaynak sütunları program detayında açılır. Ücret ve ayrıntılı ders verileri bu aktarımın dışında kalır. Ayrıntı ve yeniden üretim: `docs/osym-katalog.md`. Kısa gerçek DB/API kontrolü: `node scripts/full-catalog-check.ts`.
+
+## Kaynaklı öğrenci danışmanı
+
+Yerel model kurulumu, kaynak yenileme ve kapsam sınırları: [RAG işletim notları](docs/rag.md).

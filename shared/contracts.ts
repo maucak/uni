@@ -44,6 +44,12 @@ export const profileSchema = z.object({
   studentCity: z.string().trim().max(80).default(""),
   campus: z.string().trim().max(150).default(""),
   studyStage: z.enum(["new", "prep", "undergraduate", "other"]).default("new"),
+  lifeSteps: z
+    .array(
+      z.enum(["registration", "obs", "calendar", "prep", "housing", "campus"]),
+    )
+    .max(6)
+    .default([]),
 });
 export type Profile = z.infer<typeof profileSchema>;
 export const defaultProfile: Profile = {
@@ -64,6 +70,7 @@ export const defaultProfile: Profile = {
   studentCity: "",
   campus: "",
   studyStage: "new",
+  lifeSteps: [],
 };
 export type User = { id: string; email: string; profile: Profile };
 export type Program = {

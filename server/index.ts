@@ -1,3 +1,4 @@
+import sourceManagementRoutes from "./routes/source-management.ts";
 import authRoutes from "./routes/auth.ts";
 import catalogRoutes from "./routes/catalog.ts";
 import preferenceRoutes from "./routes/preferences.ts";
@@ -63,6 +64,7 @@ api.use(
   communityRoutes,
   advisorRoutes,
   lifeRoutes,
+  sourceManagementRoutes,
 );
 app.use("/api", (_req, res) =>
   res

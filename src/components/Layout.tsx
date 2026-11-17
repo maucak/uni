@@ -1,6 +1,12 @@
 import { DevLogin } from "./DevLogin";
 import { useState } from "react";
-import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  Link,
+  Outlet,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import {
   Compass,
   LayoutGrid,
@@ -13,17 +19,15 @@ import {
   X,
   LogOut,
   Scale,
-  BookOpen,
   GraduationCap,
+  MessageCircle,
 } from "lucide-react";
 import { useStore } from "../lib/store";
 const nav = [
   ["/", "Genel bakış", LayoutGrid],
   ["/kampus", "Kampüs yaşamı", GraduationCap],
+  ["/danisman", "Danışmana sor", MessageCircle],
   ["/programlar", "Programları keşfet", Search],
-  ["/oneriler", "Bana uygun programlar", Compass],
-  ["/tercihler", "Tercih listelerim", Bookmark],
-  ["/karsilastir", "Karşılaştır", Scale],
   ["/topluluklar", "Topluluklar", Users],
   ["/profil", "Profil ve öncelikler", SlidersHorizontal],
 ] as const;
@@ -31,6 +35,7 @@ export function Layout() {
   const { user, logout, notice, compare } = useStore();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   return (
     <div className="app-shell">
       <button
@@ -75,20 +80,34 @@ export function Layout() {
             >
               <Icon size={19} />
               <span>{label}</span>
-              {to === "/karsilastir" && compare.length > 0 && (
+            </NavLink>
+          ))}
+          <details
+            className="nav-tools"
+            open={
+              ["/oneriler", "/tercihler", "/karsilastir"].includes(
+                location.pathname,
+              ) || undefined
+            }
+          >
+            <summary>Tercih araçları</summary>
+            <NavLink to="/oneriler" onClick={() => setOpen(false)}>
+              <Compass size={18} />
+              <span>Bana uygun programlar</span>
+            </NavLink>
+            <NavLink to="/tercihler" onClick={() => setOpen(false)}>
+              <Bookmark size={18} />
+              <span>Tercih listelerim</span>
+            </NavLink>
+            <NavLink to="/karsilastir" onClick={() => setOpen(false)}>
+              <Scale size={18} />
+              <span>Karşılaştır</span>
+              {compare.length > 0 && (
                 <b className="nav-count">{compare.length}</b>
               )}
             </NavLink>
-          ))}
+          </details>
         </nav>
-        <div className="sidebar-guide">
-          <BookOpen size={20} />
-          <h3>Yolculuğuna bilgiyle devam et.</h3>
-          <p>Önerilerin yöntemini ve kullandığımız kaynakları incele.</p>
-          <Link to="/yontem" onClick={() => setOpen(false)}>
-            Yöntemi incele <ArrowUpRight size={15} />
-          </Link>
-        </div>
         <div className="sidebar-bottom">
           {user ? (
             <>

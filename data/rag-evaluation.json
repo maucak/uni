@@ -1,0 +1,95 @@
+{
+  "purpose": "Development regression set, not an independent academic benchmark. Other relevant sources may exist beyond the labels.",
+  "cases": [
+    {
+      "question": "Öğrenci notlarıma ve derslerime nereden bakarım?",
+      "relevant": [
+        "obs",
+        "isubu-guide-9bf0577587c3"
+      ]
+    },
+    {
+      "question": "OBS şifremi unuttum, giriş yapamıyorum.",
+      "relevant": [
+        "obs"
+      ]
+    },
+    {
+      "question": "e-Devletten kesin kayıt yapamadım, ne yapmalıyım?",
+      "relevant": [
+        "registration",
+        "isubu-guide-afa02bc7b639"
+      ]
+    },
+    {
+      "question": "İnternetten kaydoldum, bir de okula gelmem gerekli mi?",
+      "relevant": [
+        "isubu-guide-7e1e3f19bd36",
+        "registration"
+      ]
+    },
+    {
+      "question": "Ders ekleme çıkarma tarihlerini nerede bulurum?",
+      "relevant": [
+        "calendar",
+        "isubu-guide-aedcdd3e158a",
+        "isubu-guide-be2c998a866f"
+      ]
+    },
+    {
+      "question": "Bir öğrenci kulübüne katılmak istiyorum, üyelik nasıl oluyor?",
+      "relevant": [
+        "clubs",
+        "isubu-guide-cfdf2e0a5f60"
+      ]
+    },
+    {
+      "question": "Yemek kartıma para nasıl ekleniyor?",
+      "relevant": [
+        "dining",
+        "isubu-sks-3dda475c799e",
+        "isubu-sks-4bd7cd0ddf95"
+      ]
+    },
+    {
+      "question": "Beslenme desteği için yemek bursuna başvurmak istiyorum.",
+      "relevant": [
+        "meal-support"
+      ]
+    },
+    {
+      "question": "KYK yurduna başvuruyu nereden yaparım?",
+      "relevant": [
+        "housing"
+      ]
+    },
+    {
+      "question": "Öğrenci kimliğimi kaybettim, yenisini nasıl alırım?",
+      "relevant": [
+        "isubu-guide-7a8dd5715fd2"
+      ]
+    },
+    {
+      "question": "Sınav notumun yanlış olduğunu düşünüyorum, itiraz edebilir miyim?",
+      "relevant": [
+        "isubu-guide-97ae9a7dbff8"
+      ]
+    },
+    {
+      "question": "Başka üniversiteye ait kuralları gösterir misin?",
+      "reject": true
+    },
+    {
+      "question": "Kuantum optiği laboratuvarlarının cihaz listesi",
+      "reject": true
+    },
+    {
+      "question": "Mars uzay aracının motor parçaları",
+      "reject": true
+    },
+    {
+      "question": "Dün oynanan futbol maçının skoru",
+      "reject": true
+    }
+  ]
+}
