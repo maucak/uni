@@ -10,9 +10,10 @@ Teknoloji: React 19 + TypeScript + Vite (`src/`), Node.js + Express 5 API (`serv
 
 ## Kaldığın yeri bul
 
-1. `docs/YOL-HARITASI.md`: haftalık plan, migration numarası ayırmaları ve **İlerleme günlüğü**.
-2. Açık GitHub issue'ları ve PR'lar (`maucak/uni`).
-3. `git log --oneline -20`
+1. `docs/MODULLER.md`: modül haritası, modül sınırları, geliştirme aşamaları ve **ajan görev kartları** (sıradaki iş buradan seçilir).
+2. `docs/YOL-HARITASI.md`: migration numarası ayırmaları ve **İlerleme günlüğü**.
+3. Açık GitHub issue'ları ve PR'lar (`maucak/uni`).
+4. `git log --oneline -20`
 
 Bir işi bitirince İlerleme günlüğüne bir satır ekle (tarih, ne yapıldı, PR numarası) ve issue'yu kapat. Bir sonraki ajan oradan devam eder.
 

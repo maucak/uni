@@ -18,47 +18,9 @@ Vize raporu teslim edildi (6–8 Kasım). Final aşamasındayız.
 
 Finalde proje planının (docs/proje-plani.md §4) 11 modülünün tamamı teslim edilir. Genişleme hedefi olarak kalanlar: çoklu cihazlı mesajlaşma, ileri gizlilik, 2FA, yerel mobil uygulama, otomatik mentor eşleştirme.
 
-## Haftalık plan
+## Plan
 
-Her haftanın sonunda çıkış ölçütü tarayıcıda denenir; geçmeyen iş bir sonraki haftanın ilk işi olur.
-
-### 1. hafta · 17–23 Kasım · Temel ve tasarım kararları
-- [x] Hesap: e-posta doğrulama, parola sıfırlama, rol geçişi aday → öğrenci → mezun (migration 014)
-- [x] Şifreli mesajlaşma karar kaydı: `docs/karar-mesajlasma.md`
-- [x] Topluluk/doğrulama/mentorluk/bildirim/moderasyon veri modeli ve API taslağı: `docs/veri-modeli-v2.md`
-- [x] Öneri temel yöntemi (#2)
-- [x] Yedekleme ve geri yükleme (#15)
-- [x] Değerlendirme script iskeletleri (#4, #7)
-- [ ] Ekip: RAG soru setinin ilk 30 sorusu (#6), aday profilleri (#3), kullanıcı çalışması için 8–10 kişi
-
-**Çıkış:** Yeni hesap e-postasını doğrular ve parolasını sıfırlar; karar kaydı ile veri modeli onaylı.
-
-### 2. hafta · 24–30 Kasım · Topluluk katmanı
-- [x] Üniversite ve bölüm toplulukları, etiketler, arama, kabul edilen yanıt (015)
-- [x] Deneyim kaydı: konu, program, yıl ve yazarın o dönemki durumu; resmi bilgiden ayrı gösterilir (015)
-- [x] Doğrulama: kurumsal e-posta ve özel depoda belge; `pending/approved/rejected/revoked` durumları; inceleme ekranı; rozet (016)
-- [x] İtibar: sürümlü kurallar, kendine oy ve tekrar engeli (016)
-- [ ] Mentorluk: profil ve talep durumları (017)
-- [x] Uygulama içi bildirimler (018)
-
-**Çıkış:** Aday soru sorar, doğrulanmış öğrenci rozetle yanıtlar, mentorluk talebi kabul edilir.
-
-### 3. hafta · 1–7 Aralık · Güvenlik, mesajlaşma, işletme
-- [ ] Uçtan uca şifreli bire bir mesajlaşma, tek cihaz (019)
-- [ ] Engelleme, şikâyet, moderatör/yönetici paneli, denetim kaydı (020)
-- [ ] Açık forumda toksisite işaretleme: moderatöre yardımcı olur, otomatik silmez
-- [ ] Qdrant temizleme (#16), Docker Compose ile demo dağıtımı
-- [ ] Değerlendirmelerin ilk turu
-
-**Çıkış (7 Aralık):** 11 modülün tamamı demo ortamında çalışır.
-
-### 4. hafta · 8–14 Aralık · Pilot ve ölçüm
-- [ ] Kullanıcı çalışması (#5), RAG ölçümleri (#7–#9), öneri karşılaştırması (#4)
-- [ ] Hata düzeltme, mobil ve erişilebilirlik kontrolü, temiz makinede kurulum (#14), kılavuz (#17)
-- [ ] Final raporu (#18)
-
-### 15–17 Aralık · Teslim
-Rapor, sunum, demo provası, yedek video ve tampon süre.
+Aşamalar, modüller ve ajan görev kartları [MODULLER.md](MODULLER.md) dosyasındadır. 7 Aralık kapsam kilidi, 17 Aralık teslim.
 
 ## Migration numarası ayırmaları
 
@@ -115,6 +77,8 @@ En yeni en üstte. Bir iş bitince bir satır ekleyin.
 
 | Tarih | Ne yapıldı | PR |
 |---|---|---|
+| 2026-11-17 | Modüler yapı (M01–M15), aşamalar ve görev kartları: docs/MODULLER.md | — |
+| 2026-11-17 | Docker dağıtım dosyaları (denenmedi) | #33 |
 | 2026-11-17 | **Devir:** mentorluk (017) yarım → `wip/mentorluk` dalı; Docker dağıtımı main'de (#33) ama **hiç denenmedi** (bulutta imaj çekilemedi): registry erişimi olan makinede `docker compose up -d --build` ile ilk deneme yapılmalı; `wip/docker` dalı boş, yok sayın. Devralan ajan bu dallardan devam etsin ya da 017'yi `docs/veri-modeli-v2.md`'den yeniden yapsın. Sonra 019, 020. | — |
 | 2026-11-17 | İlerleme günlüğü | #31 |
 | 2026-11-17 | Doğrulama, roller, itibar, moderatör gizleme (016) | #30 |
