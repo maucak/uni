@@ -21,6 +21,7 @@ import Communities from "./pages/Communities";
 import QuestionDetail from "./pages/QuestionDetail";
 import Method from "./pages/Method";
 import Sources from "./pages/Sources";
+import Notifications from "./pages/Notifications";
 import "./styles.css";
 function Protected({ children }: { children: React.ReactNode }) {
   const { user, loading, error } = useStore();
@@ -71,6 +72,14 @@ function App() {
             <Route path="karsilastir" element={<Compare />} />
             <Route path="topluluklar" element={<Communities />} />
             <Route path="sorular/:id" element={<QuestionDetail />} />
+            <Route
+              path="bildirimler"
+              element={
+                <Protected>
+                  <Notifications />
+                </Protected>
+              }
+            />
             <Route path="yontem" element={<Method />} />
             <Route path="veri-kaynaklari" element={<Sources />} />
             <Route

@@ -10,6 +10,10 @@ import {
   buildQuestionListQuery,
   onContributionEvent,
 } from "../services/community-rules.ts";
+import {
+  notifyAnswerAccepted,
+  notifyAnswerReceived,
+} from "../services/notifications.ts";
 const api = Router();
 const uuid = z.uuid();
 api.get("/communities", async (req, res) => {
@@ -186,6 +190,7 @@ api.post("/questions/:id/answers", requireUser, async (req, res) => {
     "INSERT INTO answers(id,question_id,author_id,body) VALUES($1,$2,$3,$4)",
     [randomUUID(), id, res.locals.user.id, body],
   );
+  await notifyAnswerReceived(id, res.locals.user.id);
   res.status(201).json({ ok: true });
 });
 api.put("/answers/:id/vote", requireUser, async (req, res) => {
@@ -256,6 +261,8 @@ api.put("/questions/:id/accepted-answer", requireUser, async (req, res) => {
       answerId,
       actorId: res.locals.user.id,
     });
+  if (question.accepted_answer_id !== answerId)
+    await notifyAnswerAccepted(answerId, res.locals.user.id);
   res.json({ acceptedAnswerId: answerId });
 });
 api.delete("/questions/:id/accepted-answer", requireUser, async (req, res) => {

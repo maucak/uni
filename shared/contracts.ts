@@ -261,3 +261,46 @@ export type Answer = {
   voted: boolean;
   accepted: boolean;
 };
+
+export const notificationKinds = [
+  "answer_received",
+  "answer_accepted",
+  "verification_decided",
+  "mentorship_request",
+  "mentorship_response",
+  "message_received",
+] as const;
+export type NotificationKind = (typeof notificationKinds)[number];
+/** Bildirim payload'ı yalnızca kimlik ve kısa başlık taşır; başka alan atılır. */
+export const notificationPayloadKeys = [
+  "questionId",
+  "answerId",
+  "requestId",
+  "conversationId",
+  "verificationId",
+  "title",
+] as const;
+export const notificationPayloadSchema = z
+  .object({
+    questionId: z.uuid().optional(),
+    answerId: z.uuid().optional(),
+    requestId: z.uuid().optional(),
+    conversationId: z.uuid().optional(),
+    verificationId: z.uuid().optional(),
+    title: z.string().trim().max(80).optional(),
+  })
+  .strip();
+export type NotificationPayload = z.infer<typeof notificationPayloadSchema>;
+export const notificationSchema = z.object({
+  id: z.uuid(),
+  kind: z.enum(notificationKinds),
+  payload: notificationPayloadSchema,
+  read: z.boolean(),
+  createdAt: z.string(),
+});
+export type AppNotification = z.infer<typeof notificationSchema>;
+export type NotificationList = {
+  items: AppNotification[];
+  unreadCount: number;
+  hasMore: boolean;
+};
