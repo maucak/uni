@@ -30,7 +30,13 @@ export async function retrieve(
   query: string,
   context: RagContext,
   topic = "",
-  options: { semantic?: boolean; reranking?: boolean; cache?: boolean } = {},
+  options: {
+    semantic?: boolean;
+    reranking?: boolean;
+    cache?: boolean;
+    // false: BM25 sonuçları kullanılmaz (yalnızca vektör). Varsayılan true; değerlendirme içindir.
+    lexical?: boolean;
+  } = {},
 ): Promise<RagResult> {
   const start = performance.now();
   const backend = process.env.RAG_SEARCH_BACKEND || "local";
@@ -75,6 +81,7 @@ export async function retrieve(
       rerankerRevision,
       semantic: options.semantic,
       reranking: options.reranking,
+      lexical: options.lexical,
     }),
   );
   const prior = cache.get(key);
@@ -89,9 +96,12 @@ export async function retrieve(
       const chunk = chunks.find((c) => c.id === hit.id);
       return chunk ? [{ chunk, score: hit.score }] : [];
     });
-  const lexical = remote
-    ? hydrate(remote.lexical)
-    : bm25(query, chunks).slice(0, 20);
+  const lexicalOff = options.lexical === false;
+  const lexical = lexicalOff
+    ? []
+    : remote
+      ? hydrate(remote.lexical)
+      : bm25(query, chunks).slice(0, 20);
   let dense: { chunk: (typeof chunks)[number]; score: number }[] = [],
     semantic = !!remote?.dense.length;
   if (remote) dense = hydrate(remote.dense);
@@ -153,9 +163,11 @@ export async function retrieve(
     reranked
       ? r.rerank! >= floor ||
         (denseLeaders.has(r.chunk.id) && r.lexical > 0 && r.rerank! >= 0.05)
-      : semantic
-        ? r.lexical > 0 && r.semantic >= 0.84
-        : r.lexical > 0,
+      : lexicalOff
+        ? r.semantic >= 0.84
+        : semantic
+          ? r.lexical > 0 && r.semantic >= 0.84
+          : r.lexical > 0,
   );
   const parents = new Set<string>();
   let chars = 0;

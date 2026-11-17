@@ -1,0 +1,45 @@
+{
+  "ornek": true,
+  "surum": "ORNEK",
+  "aciklama": "ÖRNEK — ölçümde kullanılmaz. Yalnızca dosya şemasını gösterir; profiller ve etiketler uydurmadır. Gerçek dosya data/eval/profiller.json olmalı ve ekip tarafından yazılmalıdır.",
+  "profiller": [
+    {
+      "id": "ORNEK-01",
+      "profil": {
+        "scoreType": "SAY",
+        "rank": 50000,
+        "interests": "ÖRNEK metin: yazılım ve yapay zeka",
+        "cities": ["Ankara"],
+        "language": "any",
+        "universityType": "any",
+        "maxAnnualTuition": null,
+        "minimumScholarship": null,
+        "weights": { "interest": 3, "city": 2, "language": 2, "budget": 2 }
+      },
+      "filtre": { "rankMin": "30000", "rankMax": "90000" },
+      "etiketler": {
+        "ORNEK-KOD-A": 3,
+        "ORNEK-KOD-B": 0
+      }
+    },
+    {
+      "id": "ORNEK-02",
+      "profil": {
+        "scoreType": "EA",
+        "rank": 120000,
+        "interests": "ÖRNEK metin: işletme ve turizm",
+        "cities": [],
+        "language": "Türkçe",
+        "universityType": "Devlet",
+        "maxAnnualTuition": null,
+        "minimumScholarship": null,
+        "weights": { "interest": 3, "city": 1, "language": 2, "budget": 2 }
+      },
+      "filtre": {},
+      "etiketler": {
+        "ORNEK-KOD-C": 2,
+        "ORNEK-KOD-D": 1
+      }
+    }
+  ]
+}
