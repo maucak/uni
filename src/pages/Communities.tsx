@@ -5,30 +5,50 @@ import { useLoad } from "../lib/useLoad";
 import { useStore } from "../lib/store";
 import { api, json } from "../lib/api";
 import { PageHeading, Loading, ErrorBox, Empty } from "../components/ui";
-import type { Community, Question } from "../../shared/contracts";
+import Experiences from "../components/Experiences";
+import type {
+  Community,
+  CommunityKind,
+  Question,
+} from "../../shared/contracts";
+const kindLabels: Record<CommunityKind, string> = {
+  general: "Genel",
+  university: "Üniversite",
+  program: "Bölüm",
+};
 export default function Communities() {
   const { user } = useStore();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const programId = params.get("programId") || "";
-  const search = params.get("search") || "";
+  const search = params.get("q") || params.get("search") || "";
   const tag = params.get("tag") || "";
+  const sort = params.get("sort") === "unanswered" ? "unanswered" : "new";
+  const tab = params.get("tab") === "deneyimler" ? "deneyimler" : "sorular";
+  const kind = (params.get("kind") || "") as CommunityKind | "";
   const [communitySearch, setCommunitySearch] = useState("");
   const [communityLimit, setCommunityLimit] = useState(12);
   const { data: communities, error: communityError } = useLoad<Community[]>(
-    `/communities?${new URLSearchParams({ ...(programId ? { programId } : {}), ...(params.get("communityId") ? { communityId: params.get("communityId")! } : {}), search: communitySearch, limit: String(communityLimit) })}`,
+    `/communities?${new URLSearchParams({ ...(programId ? { programId } : {}), ...(params.get("communityId") ? { communityId: params.get("communityId")! } : {}), ...(kind ? { kind } : {}), q: communitySearch, limit: String(communityLimit) })}`,
   );
   const visibleCommunities = communities;
   const communityId =
     params.get("communityId") ||
     (programId ? communities?.[0]?.id || programId : "");
+  const activeCommunity = communities?.find((c) => c.id === communityId);
+  function setParam(key: string, value: string) {
+    const next = new URLSearchParams(params);
+    if (value) next.set(key, value);
+    else next.delete(key);
+    setParams(next);
+  }
   const {
     data: questions,
     loading,
     error,
     reload,
   } = useLoad<Question[]>(
-    `/questions?${new URLSearchParams({ ...(communityId ? { communityId } : {}), ...(search ? { search } : {}), ...(tag ? { tag } : {}) })}`,
+    `/questions?${new URLSearchParams({ ...(communityId ? { communityId } : {}), ...(search ? { q: search } : {}), ...(tag ? { tag } : {}), sort })}`,
   );
   const [compose, setCompose] = useState(false),
     [submitError, setSubmitError] = useState(""),
@@ -80,7 +100,8 @@ export default function Communities() {
           e.preventDefault();
           const f = new FormData(e.currentTarget);
           const next = new URLSearchParams(params);
-          for (const key of ["search", "tag"]) {
+          next.delete("search");
+          for (const key of ["q", "tag"]) {
             const value = String(f.get(key) || "").trim();
             if (value) next.set(key, value);
             else next.delete(key);
@@ -91,7 +112,7 @@ export default function Communities() {
         <label>
           Sorularda ara
           <input
-            name="search"
+            name="q"
             defaultValue={search}
             maxLength={100}
             placeholder="Hazırlık, dersler, ulaşım…"
@@ -111,6 +132,20 @@ export default function Communities() {
         </button>
         {programId && <Link to="/topluluklar">Tüm toplulukları aç</Link>}
       </form>
+      <div className="list-tabs" role="group" aria-label="Topluluk türü">
+        {(["", "university", "program", "general"] as const).map((k) => (
+          <button
+            key={k || "all"}
+            className={kind === k ? "active" : ""}
+            onClick={() => {
+              setCommunityLimit(12);
+              setParam("kind", k);
+            }}
+          >
+            {k ? kindLabels[k] : "Tümü"}
+          </button>
+        ))}
+      </div>
       <label>
         Topluluk bul
         <input
@@ -130,6 +165,7 @@ export default function Communities() {
             onClick={() =>
               setParams({
                 ...(programId ? { programId } : {}),
+                ...(kind ? { kind } : {}),
                 ...(c.id === communityId ? {} : { communityId: c.id }),
               })
             }
@@ -137,10 +173,13 @@ export default function Communities() {
             <span className={`community-icon tone-${i}`}>
               <Users size={23} />
             </span>
+            <span className="data-badge">{kindLabels[c.kind]}</span>
             <h3>{c.name}</h3>
             <p>{c.description}</p>
             <div>
-              <span>{c.questionCount} soru</span>
+              <span>
+                {c.questionCount} soru · {c.experienceCount} deneyim
+              </span>
               <ArrowUpRight size={18} />
             </div>
           </button>
@@ -222,55 +261,103 @@ export default function Communities() {
           </form>
         </section>
       )}
-      <div className="section-heading">
-        <h2>{communityId ? "Topluluğun soruları" : "Son sorular"}</h2>
-        {communityId && (
-          <button className="text-button" onClick={() => setParams({})}>
-            Tümünü göster
-          </button>
-        )}
-      </div>
-      {loading ? (
-        <Loading />
-      ) : error ? (
-        <ErrorBox message={error} retry={reload} />
-      ) : !questions?.length ? (
-        <Empty title="İlk soruyu sen sorabilirsin.">
-          <p>
-            Burada gerçek kullanıcıların içerikleri gösterilecek; sahte öğrenci
-            deneyimleri bulunmuyor.
-          </p>
-        </Empty>
-      ) : (
-        <div className="question-list">
-          {questions.map((q) => (
-            <Link className="question-card" key={q.id} to={`/sorular/${q.id}`}>
-              <div className="question-count">
-                <MessageCircle size={20} />
-                <strong>{q.answerCount}</strong>
-                <small>yanıt</small>
-              </div>
-              <div>
-                <span className="badge">{q.communityName}</span>
-                <div className="tags">
-                  {q.tags.map((t) => (
-                    <span key={t}>{t}</span>
-                  ))}
-                </div>
-                <h3>{q.title}</h3>
-                <p>
-                  {q.body.slice(0, 150)}
-                  {q.body.length > 150 ? "…" : ""}
-                </p>
-                <small>
-                  {q.author} ·{" "}
-                  {new Date(q.createdAt).toLocaleDateString("tr-TR")}
-                </small>
-              </div>
-              <ArrowUpRight size={19} />
-            </Link>
+      {activeCommunity && (
+        <div className="list-tabs" role="tablist">
+          {(["sorular", "deneyimler"] as const).map((t) => (
+            <button
+              key={t}
+              role="tab"
+              aria-selected={tab === t}
+              className={tab === t ? "active" : ""}
+              onClick={() => setParam("tab", t === "sorular" ? "" : t)}
+            >
+              {t === "sorular" ? "Sorular" : "Deneyimler"}
+              <span>
+                {t === "sorular"
+                  ? activeCommunity.questionCount
+                  : activeCommunity.experienceCount}
+              </span>
+            </button>
           ))}
         </div>
+      )}
+      {activeCommunity && tab === "deneyimler" ? (
+        <Experiences community={activeCommunity} />
+      ) : (
+        <>
+          <div className="section-heading">
+            <h2>{communityId ? "Topluluğun soruları" : "Son sorular"}</h2>
+            <label className="sort-control">
+              Sırala
+              <select
+                value={sort}
+                onChange={(e) =>
+                  setParam(
+                    "sort",
+                    e.target.value === "new" ? "" : e.target.value,
+                  )
+                }
+              >
+                <option value="new">En yeni</option>
+                <option value="unanswered">Yanıtsız önce</option>
+              </select>
+            </label>
+            {communityId && (
+              <button className="text-button" onClick={() => setParams({})}>
+                Tümünü göster
+              </button>
+            )}
+          </div>
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <ErrorBox message={error} retry={reload} />
+          ) : !questions?.length ? (
+            <Empty title="İlk soruyu sen sorabilirsin.">
+              <p>
+                Burada gerçek kullanıcıların içerikleri gösterilecek; sahte
+                öğrenci deneyimleri bulunmuyor.
+              </p>
+            </Empty>
+          ) : (
+            <div className="question-list">
+              {questions.map((q) => (
+                <Link
+                  className="question-card"
+                  key={q.id}
+                  to={`/sorular/${q.id}`}
+                >
+                  <div className="question-count">
+                    <MessageCircle size={20} />
+                    <strong>{q.answerCount}</strong>
+                    <small>yanıt</small>
+                  </div>
+                  <div>
+                    <span className="badge">{q.communityName}</span>
+                    {q.acceptedAnswerId && (
+                      <span className="data-badge">Kabul edilen yanıt var</span>
+                    )}
+                    <div className="tags">
+                      {q.tags.map((t) => (
+                        <span key={t}>{t}</span>
+                      ))}
+                    </div>
+                    <h3>{q.title}</h3>
+                    <p>
+                      {q.body.slice(0, 150)}
+                      {q.body.length > 150 ? "…" : ""}
+                    </p>
+                    <small>
+                      {q.author} ·{" "}
+                      {new Date(q.createdAt).toLocaleDateString("tr-TR")}
+                    </small>
+                  </div>
+                  <ArrowUpRight size={19} />
+                </Link>
+              ))}
+            </div>
+          )}
+        </>
       )}
       <div className="aside-note">
         Program toplulukları kaynaklı katalog kayıtlarına bağlıdır. İçerikler

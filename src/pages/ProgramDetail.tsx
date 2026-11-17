@@ -193,8 +193,11 @@ export default function ProgramDetail() {
           <section className="panel community-call">
             <Users size={27} />
             <div>
-              <h2>Sorularını topluluğa taşı.</h2>
-              <p>Dersler, hazırlık ve üniversite yaşamı hakkında konuş.</p>
+              <h2>Bu programın topluluğu.</h2>
+              <p>
+                Sorularını sor; öğrenci ve mezunların deneyimlerini oku.
+                Deneyimler resmi bilgiden ayrı gösterilir.
+              </p>
             </div>
             <Link
               className="button light"
@@ -202,7 +205,7 @@ export default function ProgramDetail() {
                 p.isSample ? "/topluluklar" : `/topluluklar?programId=${p.id}`
               }
             >
-              Toplulukları aç
+              {p.isSample ? "Toplulukları aç" : "Program topluluğunu aç"}
             </Link>
           </section>
         </div>

@@ -179,6 +179,66 @@ export type Community = {
   description: string;
   questionCount: number;
   programId: string | null;
+  kind: CommunityKind;
+  universityId: string | null;
+  experienceCount: number;
+};
+export const communityKinds = ["general", "university", "program"] as const;
+export type CommunityKind = (typeof communityKinds)[number];
+export const experienceTopics = [
+  "ders",
+  "hazirlik",
+  "staj",
+  "kampus",
+  "barinma",
+  "kariyer",
+  "diger",
+] as const;
+export type ExperienceTopic = (typeof experienceTopics)[number];
+export const experienceTopicLabels: Record<ExperienceTopic, string> = {
+  ders: "Dersler",
+  hazirlik: "Hazırlık",
+  staj: "Staj",
+  kampus: "Kampüs",
+  barinma: "Barınma",
+  kariyer: "Kariyer",
+  diger: "Diğer",
+};
+export type ExperienceAuthorStatus = "student" | "graduate";
+/** Deneyim kartı etiketi: resmi bilgiden ayrı görünen beyan. */
+export function experienceLabel(
+  status: ExperienceAuthorStatus,
+  year: number,
+): string {
+  return `${status === "graduate" ? "mezun deneyimi" : "öğrenci deneyimi"} · ${year}`;
+}
+export const experienceInputSchema = z.object({
+  communityId: z.uuid(),
+  programId: z.uuid().nullable().default(null),
+  topic: z.enum(experienceTopics),
+  experienceYear: z.number().int().min(1990).max(2100),
+  title: z.string().trim().min(5).max(180),
+  body: z.string().trim().min(30).max(8000),
+});
+export const experienceUpdateSchema = experienceInputSchema
+  .omit({ communityId: true, programId: true })
+  .partial();
+export type Experience = {
+  id: string;
+  communityId: string;
+  communityName: string;
+  programId: string | null;
+  topic: ExperienceTopic;
+  experienceYear: number;
+  authorStatus: ExperienceAuthorStatus;
+  title: string;
+  body: string;
+  author: string;
+  mine: boolean;
+  votes: number;
+  voted: boolean;
+  createdAt: string;
+  updatedAt: string;
 };
 export type Question = {
   tags: string[];
@@ -190,6 +250,7 @@ export type Question = {
   answerCount: number;
   communityId: string;
   communityName: string;
+  acceptedAnswerId: string | null;
 };
 export type Answer = {
   id: string;
@@ -198,4 +259,5 @@ export type Answer = {
   createdAt: string;
   votes: number;
   voted: boolean;
+  accepted: boolean;
 };
