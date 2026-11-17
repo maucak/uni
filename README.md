@@ -49,6 +49,7 @@ Dış veritabanına otomatik örnek veri yüklenmez. Başlatıcı `.env` içinde
 - TF-IDF/kosinüs ve yapılandırılmış şehir/dil eşleşmesini birleştiren ilk açıklanabilir öneri yöntemi.
 - Genel konu toplulukları, soru sorma, yanıt verme ve tekrar oyu önleyen faydalı yanıt oylaması.
 - Yetki rolleri (inceleyici, moderatör, yönetici; ilk yönetici `ADMIN_EMAILS`), kurumsal e-posta veya belgeyle öğrenci/mezun doğrulaması (`/dogrulama`, inceleme `/yonetim/dogrulama`), kapsamı yazılı rozetler, içerik gizleme ve v1 itibar puanı (yanıt oyu +2, kabul +5, deneyim oyu +1). Belgeler `var/private-uploads/` altında tutulur ve karardan 30 gün sonra silinir.
+- Mentorluk: doğrulanmış öğrencilerin mentor profili, filtreli mentor listesi ve talep/yanıt akışı; boş durumlar tarayıcıda denendi; dolu mentor akışı henüz denenmedi.
 
 Kaynaklı pilot **iki gerçek ISUBÜ programı** içerir. Türkçe programın 2023–2025 sıralama/kontenjan verileri resmî bölüm sayfasından aktarılmıştır; İngilizce programın bu sayısal alanları ve her iki programın ücretleri bilinmiyor olarak bırakılmıştır. Kaynaklar, kontrol tarihleri ve içe aktarma sürümleri `/veri-kaynaklari` sayfasındadır.
 
@@ -56,7 +57,7 @@ Ayrı örnek katalog **12 sentetik program** içerir; filtreyle açıkça seçil
 
 Sıra aralığı, öğrenim ücreti ve burs filtreleri; bilinmeyen veriyi dahil etme seçimi; ücret/burs öncelikleri; öneri bileşenleri ve kalıcı uygunluk geri bildirimi eklendi. Danışman aynı arama durumunu kullanır, değişiklik önizlemesi/onayı ve geri alma sağlar.
 
-Gemini adaptörü yapılandırıldı ancak başarılı canlı yanıt henüz doğrulanmadı: sağlayıcı model erişim kısıtı, geçici 503 ve zaman aşımı döndürdü. Hesap kurtarma/e-posta doğrulama kullanıcı kararıyla sona bırakıldı. Üniversite/bölüm üyelikleri, deneyim, mentorluk, doğrulama, itibar, yönetim ve şifreli mesajlaşma sonraki modüllerdir.
+Gemini adaptörü yapılandırıldı ancak başarılı canlı yanıt henüz doğrulanmadı: sağlayıcı model erişim kısıtı, geçici 503 ve zaman aşımı döndürdü. Şifreli mesajlaşma sonraki modüldür.
 
 ## Veri ve Gemini ayarları
 

@@ -74,3 +74,12 @@ export function scheduleDocumentCleanup() {
 }
 
 export { authorMetaSql } from "./author-meta.ts";
+
+/** Kullanıcının onaylı doğrulamalarındaki üniversiteler. */
+export async function approvedUniversityIds(userId: string): Promise<string[]> {
+  const result = await pool.query(
+    "SELECT DISTINCT university_id FROM verification_requests WHERE user_id=$1 AND status='approved'",
+    [userId],
+  );
+  return result.rows.map((row) => row.university_id);
+}

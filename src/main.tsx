@@ -1,3 +1,5 @@
+import Mentors from "./pages/Mentors";
+import Mentorship from "./pages/Mentorship";
 import SourceManagement from "./pages/SourceManagement";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -72,6 +74,15 @@ function App() {
               }
             />
             <Route path="karsilastir" element={<Compare />} />
+            <Route path="mentorlar" element={<Mentors />} />
+            <Route
+              path="mentorluk"
+              element={
+                <Protected>
+                  <Mentorship />
+                </Protected>
+              }
+            />
             <Route path="topluluklar" element={<Communities />} />
             <Route path="sorular/:id" element={<QuestionDetail />} />
             <Route

@@ -77,6 +77,7 @@ En yeni en üstte. Bir iş bitince bir satır ekleyin.
 
 | Tarih | Ne yapıldı | PR |
 |---|---|---|
+| 2026-11-17 | M12 mentorluk uygulaması ve arayüzü `feat/mentorluk` dalında; boş durumlar tarayıcıda denendi; dolu mentor arayüzü ve PR/CI bekliyor. Devir: `docs/devir-mentorluk.md`. | — |
 | 2026-11-17 | Modüler yapı (M01–M15), aşamalar ve görev kartları: docs/MODULLER.md | — |
 | 2026-11-17 | Docker dağıtım dosyaları (denenmedi) | #33 |
 | 2026-11-17 | **Devir:** mentorluk (017) yarım → `wip/mentorluk` dalı; Docker dağıtımı main'de (#33) ama **hiç denenmedi** (bulutta imaj çekilemedi): registry erişimi olan makinede `docker compose up -d --build` ile ilk deneme yapılmalı; `wip/docker` dalı boş, yok sayın. Devralan ajan bu dallardan devam etsin ya da 017'yi `docs/veri-modeli-v2.md`'den yeniden yapsın. Sonra 019, 020. | — |
