@@ -115,7 +115,7 @@ En yeni en üstte. Bir iş bitince bir satır ekleyin.
 
 | Tarih | Ne yapıldı | PR |
 |---|---|---|
-| 2026-11-17 | **Devir:** mentorluk (017) yarım → `wip/mentorluk` dalı; Docker dağıtımı başlıyordu → `wip/docker`. Devralan ajan bu dallardan devam etsin ya da 017'yi `docs/veri-modeli-v2.md`'den yeniden yapsın. Sonra 019, 020. | — |
+| 2026-11-17 | **Devir:** mentorluk (017) yarım → `wip/mentorluk` dalı; Docker dağıtımı main'de (#33) ama **hiç denenmedi** (bulutta imaj çekilemedi): registry erişimi olan makinede `docker compose up -d --build` ile ilk deneme yapılmalı; `wip/docker` dalı boş, yok sayın. Devralan ajan bu dallardan devam etsin ya da 017'yi `docs/veri-modeli-v2.md`'den yeniden yapsın. Sonra 019, 020. | — |
 | 2026-11-17 | İlerleme günlüğü | #31 |
 | 2026-11-17 | Doğrulama, roller, itibar, moderatör gizleme (016) | #30 |
 | 2026-11-17 | CI düzeltmesi: birim testleri veritabanısız | #29 |
