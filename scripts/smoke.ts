@@ -1,7 +1,7 @@
 import "dotenv/config";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir, rm } from "node:fs/promises";
 import pg from "pg";
 const origin = process.env.WEB_ORIGIN || "http://127.0.0.1:5173";
 const base = `${origin}/api/v1`;
@@ -12,6 +12,18 @@ const databaseUrl =
   process.env.DATABASE_URL ||
   `postgresql://postgres:${await readFile("var/database-password", "utf8")}@127.0.0.1:${process.env.LOCAL_PG_PORT || 55432}/kampuspusula`;
 const db = new pg.Pool({ connectionString: databaseUrl });
+const mailDir = "var/mail";
+/** var/mail altındaki en son iletiden verilen yoldaki belirteci okur. */
+async function mailToken(email: string, path: string) {
+  const files = (await readdir(mailDir).catch(() => []))
+    .filter((f) => f.endsWith(`-${email}.txt`))
+    .sort();
+  assert(files.length, `${email} için e-posta dosyası yok`);
+  const text = await readFile(`${mailDir}/${files.at(-1)}`, "utf8");
+  const match = text.match(new RegExp(`${path}\\?token=([A-Za-z0-9_-]+)`));
+  assert(match, "e-postada bağlantı yok");
+  return match[1];
+}
 async function request(
   path: string,
   method = "GET",
@@ -200,8 +212,101 @@ try {
     await request("/preference-lists", "GET", undefined, login.cookie!)
   ).data[0];
   assert.equal(persisted.items[0].note, "Kalıcı araştırma notu");
+  // E-posta doğrulama: kayıt → var/mail → doğrula → tek kullanım.
+  const emailA = `${prefix}-a@example.test`;
+  assert.equal(first.data.emailVerified, false);
+  const verifyToken = await mailToken(emailA, "/eposta-dogrula");
+  const tokenRow = await db.query(
+    "SELECT token_hash FROM account_tokens WHERE user_id=$1 AND purpose='verify_email'",
+    [first.data.id],
+  );
+  assert.notEqual(tokenRow.rows[0].token_hash, verifyToken);
+  await request("/auth/verify-email", "POST", { token: verifyToken });
+  await request(
+    "/auth/verify-email",
+    "POST",
+    { token: verifyToken },
+    undefined,
+    400,
+  );
+  assert.equal(
+    (await request("/me", "GET", undefined, login.cookie!)).data.emailVerified,
+    true,
+  );
+  await request("/auth/verify-email/resend", "POST", {}, login.cookie!, 409);
+  await request("/auth/verify-email/resend", "POST", {}, b);
+  // Parola sıfırlama: kayıtlı/kayıtsız aynı yanıt, eski oturum iptal, tek kullanım.
+  const forgot = await request(
+    "/auth/password/forgot",
+    "POST",
+    { email: emailA },
+    undefined,
+    202,
+  );
+  const unknown = await request(
+    "/auth/password/forgot",
+    "POST",
+    { email: `${prefix}-yok@example.test` },
+    undefined,
+    202,
+  );
+  assert.deepEqual(unknown.data, forgot.data);
+  const resetToken = await mailToken(emailA, "/parola-sifirla");
+  const newPassword = "Reset-integration-passphrase-2026";
+  await request("/auth/password/reset", "POST", {
+    token: resetToken,
+    password: newPassword,
+  });
+  await request(
+    "/auth/password/reset",
+    "POST",
+    { token: resetToken, password: "Another-passphrase-2026" },
+    undefined,
+    400,
+  );
+  assert.equal(
+    (await request("/me", "GET", undefined, login.cookie!)).data,
+    null,
+  );
+  await request(
+    "/auth/login",
+    "POST",
+    { email: emailA, password },
+    undefined,
+    401,
+  );
+  const relogin = await request("/auth/login", "POST", {
+    email: emailA,
+    password: newPassword,
+  });
+  // Parola değiştirme: mevcut parola gerekir, diğer oturumlar kapanır.
+  const other = await request("/auth/login", "POST", {
+    email: emailA,
+    password: newPassword,
+  });
+  await request(
+    "/me/password",
+    "PUT",
+    { currentPassword: "Wrong-password-123", newPassword: password },
+    relogin.cookie!,
+    400,
+  );
+  await request(
+    "/me/password",
+    "PUT",
+    { currentPassword: newPassword, newPassword: password },
+    relogin.cookie!,
+  );
+  assert.equal(
+    (await request("/me", "GET", undefined, other.cookie!)).data,
+    null,
+  );
+  assert.equal(
+    (await request("/me", "GET", undefined, relogin.cookie!)).data.email,
+    emailA,
+  );
   console.log(
-    "PASS: hesap/profil, filtre/öneri, kalıcılık, sahiplik, sıra çakışması, CSRF, soru/yanıt, yinelenen oy ve oturum iptali.",
+    "PASS: hesap/profil, filtre/öneri, kalıcılık, sahiplik, sıra çakışması, CSRF, soru/yanıt, yinelenen oy, oturum iptali, e-posta doğrulama, parola sıfırlama/değiştirme.",
   );
 } finally {
   if (userIds.length) {
@@ -217,5 +322,7 @@ try {
     );
     await db.query("DELETE FROM users WHERE id=ANY($1::uuid[])", [userIds]);
   }
+  for (const file of await readdir(mailDir).catch(() => []))
+    if (file.includes(prefix)) await rm(`${mailDir}/${file}`, { force: true });
   await db.end();
 }
