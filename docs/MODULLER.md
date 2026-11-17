@@ -17,7 +17,7 @@ Son güncelleme: 17 Kasım 2026. Bu belge projeyi bağımsız geliştirilebilen 
 | M09 | Topluluk ve deneyimler         | `routes/{community,experiences}.ts`, `services/{community-rules,author-meta}.ts`; sayfalar `Communities`, `QuestionDetail`; `Experiences`, `AuthorMeta`                                                    | 001, 004, 015    | Tamam                                   |
 | M10 | Doğrulama, roller, itibar      | `routes/{verification,admin}.ts`, `services/verification{,-rules}.ts`; sayfalar `Verification`, `AdminVerification`                                                                                        | 016              | Tamam                                   |
 | M11 | Bildirimler                    | `routes/notifications.ts`, `services/notification{s,-rules}.ts`; sayfa `Notifications`; `NotificationBell`                                                                                                 | 018              | Tamam. 3 bildirim türü henüz bağlanmadı |
-| M12 | Mentorluk                      | `routes/mentorship.ts`, `services/mentorship{,-rules}.ts`, `services/blocks.ts` (geçici)                                                                                                                   | 017              | **Yarım:** `wip/mentorluk` dalında      |
+| M12 | Mentorluk                      | `routes/mentorship.ts`, `services/mentorship{,-rules}.ts`, `services/blocks.ts` (geçici)                                                                                                                   | 017              | Uygulandı; dolu mentor arayüzü denenmedi      |
 | M13 | Şifreli mesajlaşma             | Yeni                                                                                                                                                                                                       | 019              | Başlanmadı                              |
 | M14 | Güvenlik ve moderasyon         | Yeni; `services/blocks.ts` bu modüle geçer                                                                                                                                                                 | 020              | Başlanmadı                              |
 | M15 | Değerlendirme ve tez           | `scripts/eval-*`, `docs/degerlendirme.md`, `data/eval/`                                                                                                                                                    | —                | Altyapı tamam. Veriyi ekip yazacak      |
@@ -47,7 +47,7 @@ Okuma sırası: oktaki modül, soldakinin servislerini kullanır. Bir modülü g
 | `requireUser`, `requireVerifiedEmail`, `requireRole(...)` | M02/M10 (`server/auth.ts`)           | Kimlik ve yetki                                                   |
 | `notify(userId, kind, payload, actorId)`                  | M11                                  | Bildirim. Payload'da içerik olmaz, yalnızca kimlik ve kısa başlık |
 | `onContributionEvent(...)`                                | M10 (`community-rules.ts` üzerinden) | İtibar olayı                                                      |
-| Onaylı doğrulama sorgusu                                  | M10                                  | Mentor uygunluğu (M12). Fonksiyon yoksa M10'da açılır             |
+| `approvedUniversityIds(userId)`                           | M10 (`services/verification.ts`)     | Mentor uygunluğu için onaylı üniversiteler             |
 | `isBlocked(a, b)`                                         | M14 (geçici olarak M12'de)           | Talep, mesaj ve bildirim engeli                                   |
 | `sendMail(...)`                                           | M01                                  | E-posta (geliştirmede dosyaya yazar)                              |
 
@@ -101,7 +101,7 @@ Her kart bir ajan oturumuna olduğu gibi verilebilir. Kartlar sırayla çalışt
 
 **K1 · M12 Mentorluk** (dal `feat/mentorluk`)
 
-- `wip/mentorluk` dalındaki çalışmadan devam et: migration 017, route, kurallar ve testler yazıldı; arayüz eksik ve testler çalıştırılmadı. Bu dalı güncel `main` ile birleştir.
+- `feat/mentorluk` dalında uygulandı; dolu mentor arayüzü denemesi ve PR/CI bekliyor.
 - Sözleşme `veri-modeli-v2.md` §017. Kurallar:
   - Mentor profili için onaylı doğrulama gerekir. Doğrulama kaldırılırsa profil listede görünmez.
   - Talep için doğrulanmış e-posta gerekir. Kendine talep olmaz. Açık çift için ikinci talep 409 döner.

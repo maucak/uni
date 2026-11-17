@@ -3587,3 +3587,37 @@ input[type="checkbox"] {
   background: #cb7351;
   margin-top: 6px;
 }
+
+/* === Mentorluk === */
+.mentorship-grid {
+  display: grid;
+  gap: 16px;
+  margin-block: 20px;
+}
+.mentorship-card {
+  border: 1px solid var(--border, #dce2e8);
+  border-radius: 12px;
+  padding: 20px;
+  background: #fff;
+  margin-block: 16px;
+}
+.mentorship-card form {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+.mentorship-card label {
+  display: grid;
+  gap: 6px;
+}
+.mentorship-card textarea {
+  min-height: 100px;
+}
+.mentorship-actions,
+.mentorship-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin-block: 16px;
+}

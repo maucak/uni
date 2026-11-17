@@ -34,6 +34,7 @@ const nav = [
   ["/danisman", "Danışmana sor", MessageCircle],
   ["/programlar", "Programları keşfet", Search],
   ["/topluluklar", "Topluluklar", Users],
+  ["/mentorlar", "Mentorluk", Users],
   ["/profil", "Profil ve öncelikler", SlidersHorizontal],
 ] as const;
 export function Layout() {

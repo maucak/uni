@@ -1,3 +1,4 @@
+import mentorshipRoutes from "./routes/mentorship.ts";
 import sourceManagementRoutes from "./routes/source-management.ts";
 import authRoutes from "./routes/auth.ts";
 import catalogRoutes from "./routes/catalog.ts";
@@ -88,6 +89,7 @@ api.use(
   advisorRoutes,
   lifeRoutes,
   notificationRoutes,
+  mentorshipRoutes,
   sourceManagementRoutes,
   verificationRoutes,
   adminRoutes,

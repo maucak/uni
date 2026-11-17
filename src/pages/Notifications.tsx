@@ -21,7 +21,11 @@ const icons: Record<string, typeof Bell> = {
   answer_accepted: CheckCircle2,
 };
 const targetOf = (n: AppNotification) =>
-  n.payload.questionId ? `/sorular/${n.payload.questionId}` : null;
+  n.payload.requestId
+    ? "/mentorluk"
+    : n.payload.questionId
+      ? `/sorular/${n.payload.questionId}`
+      : null;
 const changed = () => window.dispatchEvent(new Event(NOTIFICATIONS_CHANGED));
 
 export default function Notifications() {
