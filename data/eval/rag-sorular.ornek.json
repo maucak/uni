@@ -1,0 +1,27 @@
+{
+  "ornek": true,
+  "surum": "ORNEK",
+  "aciklama": "ÖRNEK — ölçümde kullanılmaz. Yalnızca dosya şemasını gösterir; sorular ve kaynak kimlikleri uydurmadır. Gerçek dosya data/eval/rag-sorular.json olmalı ve ekip tarafından yazılmalıdır.",
+  "sorular": [
+    {
+      "id": "ORNEK-01",
+      "soru": "ÖRNEK soru: Öğrenci belgesini nereden alırım?",
+      "onceki_turlar": [],
+      "kurum": "isubu",
+      "ilgili_kaynaklar": ["ORNEK-KAYNAK-1"],
+      "kacinilacak_kaynaklar": [],
+      "sinif": "acik",
+      "not": "ÖRNEK — ölçümde kullanılmaz"
+    },
+    {
+      "id": "ORNEK-02",
+      "soru": "ÖRNEK soru: KYK yurdu başvurusu ne zaman?",
+      "onceki_turlar": [],
+      "kurum": "national",
+      "ilgili_kaynaklar": [],
+      "kacinilacak_kaynaklar": [],
+      "sinif": "kaynaksiz",
+      "not": "ÖRNEK — ölçümde kullanılmaz"
+    }
+  ]
+}
