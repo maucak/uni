@@ -95,8 +95,30 @@ Danışman mesajı ve sınırlı tercih/program bağlamı Gemini'ye gider; ad/e-
 | `npm run test:integration` | Çalışan yerel servislerde kritik API akışları |
 | `npm run db:migrate` | DATABASE_URL üzerinde migration |
 | `npm run db:seed` | Sentetik geliştirme kataloğu |
+| `npm run db:backup` | Veritabanının `pg_dump -Fc` yedeği (`var/backups/`) |
+| `npm run db:restore -- <dosya> --target <URL>` | Yedeği boş bir veritabanına geri yükler ve doğrular |
+| `npm run db:backup-check` | Yedekle, geri yükle, sayıları karşılaştır (PASS/FAIL) |
 
 Entegrasyon testi geçici `example.test` hesapları oluşturur ve kendi kayıtlarını temizler. Varsayılan olarak yerel 5173 adresini hedefler; üretim ortamında çalıştırmayın.
+
+## Yedekleme ve geri yükleme
+
+`npm run db:backup`, `DATABASE_URL` (tanımlı değilse `npm run dev` ile açılan yerel veritabanı) için özel biçimli (`pg_dump -Fc`) bir yedek alır. Dosya `var/backups/<veritabanı>-<zaman>.dump` olarak yazılır; yanına tablo sayısı, `users`, `programs` ve `schema_migrations` satır sayılarını içeren bir `.json` manifest konur. Komut sonunda boyutu ve sha256 değerini yazdırır. Yerel veritabanını yedeklemek için `npm run dev` açık olmalıdır.
+
+```powershell
+npm run db:backup
+# Boş bir veritabanına geri yükleme (yoksa oluşturulur):
+npm run db:restore -- var/backups/kampuspusula-20261117T120000Z.dump --target postgresql://postgres:PAROLA@127.0.0.1:55432/kampus_restore
+```
+
+Aynı komutlar Windows PowerShell, macOS ve Linux'ta çalışır. Geri yükleme önce yedeğin sha256 değerini manifestle karşılaştırır, sonra geri yüklenen veritabanındaki sayıları manifestle denetler; fark varsa hata koduyla biter.
+
+- **Hedef boş olmalıdır.** Dolu bir veritabanı reddedilir; `--target` zorunludur ve `DATABASE_URL` ile aynı veritabanı `--force` olmadan kabul edilmez. `--force`, yedekteki nesneleri silip yeniden oluşturur (`--clean --if-exists`); yedekte olmayan tablolara dokunmaz. Yerel geliştirme veritabanınızı ezmek istiyorsanız önce yeni bir yedek alın.
+- **`pg_dump` ve `pg_restore` gerekir.** Komutlar önce `PG_BIN_DIR`, sonra `PATH`, sonra `embedded-postgres` platform paketinin `bin` klasöründe arar. `@embedded-postgres/windows-x64` paketi yalnızca `initdb`, `pg_ctl` ve `postgres` içerir; `pg_dump` içermez. Windows'ta [PostgreSQL yükleyicisi](https://www.postgresql.org/download/windows/) ile "Command Line Tools" bileşenini kurun ve `bin` klasörünü (ör. `C:\Program Files\PostgreSQL\18\bin`) `PATH`'e ya da `PG_BIN_DIR`'e ekleyin. Gömülü sunucu PostgreSQL 18 olduğundan istemci araçları 18 veya üstü olmalıdır; eski sürüm olursa komut bunu söyleyerek durur.
+- **Parola** komut satırına konmaz, `PGPASSWORD` ortam değişkeniyle geçilir; bağlantı dizesi loga yazılmaz.
+- **Yedekler Git dışındadır.** `var/` `.gitignore` içindedir; yedekler hesap verisi içerdiğinden paylaşmayın ve commit etmeyin. Önemli bir yedeği başka bir diske ya da güvenli bir yere kopyalayın.
+- **Düzenli yedek önerisi:** önemli bir değişiklikten (migration, katalog içe aktarma) önce ve demo ya da teslim öncesi günlük `npm run db:backup` çalıştırın. Ara sıra bir yedeği `kampus_restore` gibi ayrı bir veritabanına geri yükleyerek denemek, yedeğin gerçekten işe yaradığını gösterir.
+- `npm run db:backup-check`, `kampus_backup` veritabanını migrate edip seed'ler, bir test kullanıcısı ekler, yedekler, `kampus_restore` veritabanına (her çalıştırmada silinip yeniden oluşturulur) geri yükler ve sayıları karşılaştırır. Sonuç `PASS` ya da `FAIL` yazılır.
 
 ## Depo düzeni
 
