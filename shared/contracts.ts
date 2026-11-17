@@ -73,10 +73,12 @@ export const defaultProfile: Profile = {
   lifeSteps: [],
 };
 // profile.role kullanıcının kendi beyanıdır; doğrulanmış rozet anlamına gelmez.
+// roles sunucunun verdiği yetki rolleridir (reviewer, moderator, admin); istemci yalnız arayüz için okur.
 export type User = {
   id: string;
   email: string;
   emailVerified: boolean;
+  roles: ("reviewer" | "moderator" | "admin")[];
   profile: Profile;
 };
 export type Program = {
@@ -223,7 +225,20 @@ export const experienceInputSchema = z.object({
 export const experienceUpdateSchema = experienceInputSchema
   .omit({ communityId: true, programId: true })
   .partial();
-export type Experience = {
+export type VerifiedBadge = {
+  claim: "student" | "graduate";
+  method: "institution_email" | "document";
+  university: string;
+  program: string | null;
+  label: string;
+};
+/** Kartlarda yazar adının yanında gösterilen doğrulanmış rozetler ve itibar. */
+export type AuthorMeta = {
+  authorId: string;
+  authorBadges: VerifiedBadge[];
+  authorReputation: number;
+};
+export type Experience = AuthorMeta & {
   id: string;
   communityId: string;
   communityName: string;
@@ -240,7 +255,7 @@ export type Experience = {
   createdAt: string;
   updatedAt: string;
 };
-export type Question = {
+export type Question = AuthorMeta & {
   tags: string[];
   id: string;
   title: string;
@@ -252,7 +267,7 @@ export type Question = {
   communityName: string;
   acceptedAnswerId: string | null;
 };
-export type Answer = {
+export type Answer = AuthorMeta & {
   id: string;
   body: string;
   author: string;

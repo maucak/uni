@@ -48,6 +48,7 @@ Dış veritabanına otomatik örnek veri yüklenmez. Başlatıcı `.env` içinde
 - Birden fazla özel tercih listesi, kalıcı notlar, sıra değiştirme ve revision çakışması kontrolü.
 - TF-IDF/kosinüs ve yapılandırılmış şehir/dil eşleşmesini birleştiren ilk açıklanabilir öneri yöntemi.
 - Genel konu toplulukları, soru sorma, yanıt verme ve tekrar oyu önleyen faydalı yanıt oylaması.
+- Yetki rolleri (inceleyici, moderatör, yönetici; ilk yönetici `ADMIN_EMAILS`), kurumsal e-posta veya belgeyle öğrenci/mezun doğrulaması (`/dogrulama`, inceleme `/yonetim/dogrulama`), kapsamı yazılı rozetler, içerik gizleme ve v1 itibar puanı (yanıt oyu +2, kabul +5, deneyim oyu +1). Belgeler `var/private-uploads/` altında tutulur ve karardan 30 gün sonra silinir.
 
 Kaynaklı pilot **iki gerçek ISUBÜ programı** içerir. Türkçe programın 2023–2025 sıralama/kontenjan verileri resmî bölüm sayfasından aktarılmıştır; İngilizce programın bu sayısal alanları ve her iki programın ücretleri bilinmiyor olarak bırakılmıştır. Kaynaklar, kontrol tarihleri ve içe aktarma sürümleri `/veri-kaynaklari` sayfasındadır.
 

@@ -22,7 +22,10 @@ import {
   Scale,
   GraduationCap,
   MessageCircle,
+  BadgeCheck,
+  ShieldCheck,
 } from "lucide-react";
+import { isReviewer, hasRole } from "../lib/roles";
 import { useStore } from "../lib/store";
 import { NotificationBell } from "./NotificationBell";
 const nav = [
@@ -109,6 +112,18 @@ export function Layout() {
               )}
             </NavLink>
           </details>
+          {user && (
+            <NavLink to="/dogrulama" onClick={() => setOpen(false)}>
+              <BadgeCheck size={19} />
+              <span>Doğrulama</span>
+            </NavLink>
+          )}
+          {(isReviewer(user) || hasRole(user, "admin")) && (
+            <NavLink to="/yonetim/dogrulama" onClick={() => setOpen(false)}>
+              <ShieldCheck size={19} />
+              <span>Yönetim</span>
+            </NavLink>
+          )}
         </nav>
         <div className="sidebar-bottom">
           {user ? (

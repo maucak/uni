@@ -6,6 +6,12 @@ import communityRoutes from "./routes/community.ts";
 import experienceRoutes from "./routes/experiences.ts";
 import advisorRoutes from "./routes/advisor.ts";
 import lifeRoutes from "./routes/life.ts";
+import verificationRoutes from "./routes/verification.ts";
+import adminRoutes from "./routes/admin.ts";
+import {
+  scheduleDocumentCleanup,
+  seedEmailDomains,
+} from "./services/verification.ts";
 import notificationRoutes from "./routes/notifications.ts";
 import "dotenv/config";
 import express from "express";
@@ -16,7 +22,7 @@ import { z } from "zod";
 import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
 import { pool } from "./db.ts";
-import { session } from "./auth.ts";
+import { applyAdminEmails, session } from "./auth.ts";
 const app = express();
 app.disable("x-powered-by");
 app.use(
@@ -69,6 +75,8 @@ api.use(
   lifeRoutes,
   notificationRoutes,
   sourceManagementRoutes,
+  verificationRoutes,
+  adminRoutes,
 );
 app.use("/api", (_req, res) =>
   res
@@ -94,6 +102,11 @@ app.use(
           (i) => `${i.path.join(".")}: ${i.message}`,
         ),
       });
+    if (error.type === "entity.too.large")
+      return res.status(413).json({
+        code: "TOO_LARGE",
+        message: "İstek gövdesi çok büyük. Belgeler en fazla 5 MB olabilir.",
+      });
     if (error.type === "entity.parse.failed")
       return res
         .status(400)
@@ -112,6 +125,9 @@ app.use(
     });
   },
 );
+await applyAdminEmails();
+await seedEmailDomains();
+scheduleDocumentCleanup();
 const server = app.listen(Number(process.env.PORT || 3001), "127.0.0.1", () =>
   console.log(`API hazır: http://127.0.0.1:${process.env.PORT || 3001}`),
 );

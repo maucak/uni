@@ -1,4 +1,7 @@
 import { useState, type FormEvent } from "react";
+import { AuthorMeta } from "./AuthorMeta";
+import { EyeOff } from "lucide-react";
+import { isModerator } from "../lib/roles";
 import { Link } from "react-router-dom";
 import { ThumbsUp, Pencil, Trash2, X } from "lucide-react";
 import { useLoad } from "../lib/useLoad";
@@ -213,7 +216,7 @@ export default function Experiences({ community }: { community: Community }) {
                   <h3>{e.title}</h3>
                   <p className="user-content">{e.body}</p>
                   <p className="quiet">
-                    {e.author} ·{" "}
+                    {e.author} <AuthorMeta meta={e} /> ·{" "}
                     {new Date(e.createdAt).toLocaleDateString("tr-TR")}
                   </p>
                   <div className="hero-actions">
@@ -253,6 +256,23 @@ export default function Experiences({ community }: { community: Community }) {
                           <Trash2 size={16} /> Sil
                         </button>
                       </>
+                    )}
+                    {!e.mine && isModerator(user) && (
+                      <button
+                        className="text-button"
+                        disabled={busy}
+                        onClick={() =>
+                          confirm("Deneyim gizlensin mi?") &&
+                          run(() =>
+                            api(
+                              `/moderation/experiences/${e.id}`,
+                              json("PUT", { status: "hidden" }),
+                            ),
+                          )
+                        }
+                      >
+                        <EyeOff size={16} /> Gizle
+                      </button>
                     )}
                   </div>
                 </>

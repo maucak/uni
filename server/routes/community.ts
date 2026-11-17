@@ -10,11 +10,18 @@ import {
   buildQuestionListQuery,
   onContributionEvent,
 } from "../services/community-rules.ts";
+import { toBadges } from "../services/verification-rules.ts";
+import { authorMetaSql } from "../services/author-meta.ts";
 import {
   notifyAnswerAccepted,
   notifyAnswerReceived,
 } from "../services/notifications.ts";
 const api = Router();
+const authorFields = (row: any) => ({
+  authorId: row.author_id,
+  authorBadges: toBadges(row.author_badges),
+  authorReputation: row.author_reputation,
+});
 const uuid = z.uuid();
 api.get("/communities", async (req, res) => {
   const programId = req.query.programId
@@ -98,6 +105,7 @@ api.get("/questions", async (req, res) => {
       body: q.body,
       tags: q.tags,
       author: q.author,
+      ...authorFields(q),
       createdAt: q.created_at,
       answerCount: q.answer_count,
       communityId: q.community_id,
@@ -140,12 +148,12 @@ api.post("/questions", requireUser, async (req, res) => {
 api.get("/questions/:id", async (req, res) => {
   const id = uuid.parse(req.params.id);
   const q = await pool.query(
-    `SELECT q.*,u.profile->>'displayName' AS author,c.name AS community_name FROM questions q JOIN users u ON u.id=q.author_id JOIN communities c ON c.id=q.community_id WHERE q.id=$1 AND q.status='visible'`,
+    `SELECT q.*,u.profile->>'displayName' AS author,${authorMetaSql("q.author_id")},c.name AS community_name FROM questions q JOIN users u ON u.id=q.author_id JOIN communities c ON c.id=q.community_id WHERE q.id=$1 AND q.status='visible'`,
     [id],
   );
   if (!q.rowCount) fail(404, "NOT_FOUND", "Soru bulunamadı.");
   const a = await pool.query(
-    `SELECT a.*,u.profile->>'displayName' AS author,count(v.user_id)::int AS votes,bool_or(v.user_id=$2::uuid) AS voted FROM answers a JOIN users u ON u.id=a.author_id LEFT JOIN answer_votes v ON v.answer_id=a.id WHERE a.question_id=$1 AND a.status='visible' GROUP BY a.id,u.id ORDER BY (a.id=$3::uuid) DESC,a.created_at`,
+    `SELECT a.*,u.profile->>'displayName' AS author,${authorMetaSql("a.author_id")},count(v.user_id)::int AS votes,bool_or(v.user_id=$2::uuid) AS voted FROM answers a JOIN users u ON u.id=a.author_id LEFT JOIN answer_votes v ON v.answer_id=a.id WHERE a.question_id=$1 AND a.status='visible' GROUP BY a.id,u.id ORDER BY (a.id=$3::uuid) DESC,a.created_at`,
     [id, res.locals.user?.id || null, q.rows[0].accepted_answer_id],
   );
   const row = q.rows[0];
@@ -155,6 +163,7 @@ api.get("/questions/:id", async (req, res) => {
     body: row.body,
     tags: row.tags,
     author: row.author,
+    ...authorFields(row),
     createdAt: row.created_at,
     communityName: row.community_name,
     communityId: row.community_id,
@@ -165,6 +174,7 @@ api.get("/questions/:id", async (req, res) => {
       id: a.id,
       body: a.body,
       author: a.author,
+      ...authorFields(a),
       createdAt: a.created_at,
       votes: a.votes,
       voted: !!a.voted,
@@ -255,6 +265,12 @@ api.put("/questions/:id/accepted-answer", requireUser, async (req, res) => {
     id,
     answerId,
   ]);
+  if (question.accepted_answer_id && question.accepted_answer_id !== answerId)
+    await onContributionEvent({
+      kind: "answer_unaccepted",
+      answerId: question.accepted_answer_id,
+      actorId: res.locals.user.id,
+    });
   if (question.accepted_answer_id !== answerId)
     await onContributionEvent({
       kind: "answer_accepted",

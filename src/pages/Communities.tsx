@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { AuthorMeta } from "../components/AuthorMeta";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Users, MessageCircle, ArrowUpRight, Plus, X } from "lucide-react";
 import { useLoad } from "../lib/useLoad";
@@ -348,7 +349,7 @@ export default function Communities() {
                       {q.body.length > 150 ? "…" : ""}
                     </p>
                     <small>
-                      {q.author} ·{" "}
+                      {q.author} <AuthorMeta meta={q} /> ·{" "}
                       {new Date(q.createdAt).toLocaleDateString("tr-TR")}
                     </small>
                   </div>
