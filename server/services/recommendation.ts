@@ -4,6 +4,8 @@ import type {
   Recommendation,
 } from "../../shared/contracts.ts";
 export const algorithmVersion = "content-v2-budget-tfidf";
+export const baselineAlgorithmVersion = "baseline-v1-filter-rank";
+export type RecommendationMethod = "personalized" | "baseline";
 const stopWords = new Set([
   "ve",
   "ile",
@@ -33,6 +35,44 @@ export function cosine(a: Map<string, number>, b: Map<string, number>) {
   for (const v of b.values()) nb += v * v;
   return na && nb ? dot / Math.sqrt(na * nb) : 0;
 }
+// Her iki yöntemin paylaştığı kesin filtre: puan türü ve üniversite türü.
+// Sıra bandı, şehir, dil, ücret ve burs filtreleri yönlendirme katmanında
+// filterPrograms ile aday kümesine uygulanır; yöntemden bağımsızdır.
+export function eligiblePrograms(programs: Program[], profile: Profile) {
+  return programs.filter(
+    (p) =>
+      p.scoreType === profile.scoreType &&
+      (profile.universityType === "any" ||
+        p.universityType === profile.universityType),
+  );
+}
+// Temel yöntem: aynı kesin filtreler, ardından yalnızca son başarı sırası.
+// İlgi alanı ve ağırlıklar kullanılmaz. Bilinmeyen sıra sona gider.
+export function baselineRecommend(
+  programs: Program[],
+  profile: Profile,
+): Recommendation[] {
+  return eligiblePrograms(programs, profile)
+    .map((program) => ({
+      program,
+      score: null,
+      coverage: 0,
+      reasons: [
+        program.rank === null
+          ? "Son başarı sırası bilinmiyor; liste sonunda yer alır."
+          : `Son başarı sırası ${program.rank.toLocaleString("tr-TR")}${program.rankYear || program.year ? ` (${program.rankYear ?? program.year})` : ""}.`,
+      ],
+      missing: [
+        "Temel yöntem ilgi alanı ve öncelik ağırlıklarını kullanmaz; uyum endeksi üretmez.",
+      ],
+      components: [],
+    }))
+    .sort(
+      (a, b) =>
+        (a.program.rank ?? Infinity) - (b.program.rank ?? Infinity) ||
+        a.program.id.localeCompare(b.program.id),
+    );
+}
 export function recommend(
   programs: Program[],
   profile: Profile,
@@ -60,13 +100,7 @@ export function recommend(
   const corpusIndex = new Map(corpus.map((p, i) => [p.id, i]));
   const userTokens = tokenize(profile.interests);
   const user = vector(userTokens);
-  return programs
-    .filter(
-      (p) =>
-        p.scoreType === profile.scoreType &&
-        (profile.universityType === "any" ||
-          p.universityType === profile.universityType),
-    )
+  return eligiblePrograms(programs, profile)
     .map((program) => {
       const i = corpusIndex.get(program.id) ?? -1;
       const tokens =

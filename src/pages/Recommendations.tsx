@@ -56,6 +56,7 @@ export default function Recommendations() {
     [loading, setLoading] = useState(true),
     [error, setError] = useState("");
   const [kind, setKind] = useState("real"),
+    [method, setMethod] = useState<"personalized" | "baseline">("personalized"),
     [runId, setRunId] = useState(""),
     [version, setVersion] = useState("");
   async function load() {
@@ -66,7 +67,10 @@ export default function Recommendations() {
         items: Recommendation[];
         id: string;
         catalogVersion: string;
-      }>("/recommendations", json("POST", { filters: { dataKind: kind } }));
+      }>(
+        "/recommendations",
+        json("POST", { method, filters: { dataKind: kind } }),
+      );
       setItems(r.items);
       setRunId(r.id);
       setVersion(r.catalogVersion);
@@ -78,7 +82,7 @@ export default function Recommendations() {
   }
   useEffect(() => {
     void load();
-  }, [kind]);
+  }, [kind, method]);
   return (
     <>
       <PageHeading
@@ -100,12 +104,27 @@ export default function Recommendations() {
             <option value="sample">Örnek geliştirme verisi</option>
           </select>
         </label>
+        <label>
+          Öneri yöntemi
+          <select
+            value={method}
+            onChange={(e) =>
+              setMethod(e.target.value as "personalized" | "baseline")
+            }
+          >
+            <option value="personalized">
+              Kişiselleştirilmiş (varsayılan)
+            </option>
+            <option value="baseline">Temel: filtre + başarı sırası</option>
+          </select>
+        </label>
         <small>Katalog: {version || "…"}</small>
       </div>
       <div className="recommendation-info">
         <p>
-          Uyum endeksi yerleşme olasılığı değildir. Geçmiş yıl sıralamaları
-          öneri puanına katılmaz.
+          {method === "baseline"
+            ? "Temel yöntem değerlendirme içindir: aynı kesin filtreler uygulanır, ilgi alanın ve öncelik ağırlıkların kullanılmaz; programlar son başarı sırasına göre dizilir."
+            : "Uyum endeksi yerleşme olasılığı değildir. Geçmiş yıl sıralamaları öneri puanına katılmaz."}
         </p>
         <button className="text-button" onClick={load} disabled={loading}>
           <RefreshCw size={15} /> Yenile
@@ -127,14 +146,16 @@ export default function Recommendations() {
               program={r.program}
               extra={
                 <div className="recommendation-details">
-                  <div className="score-row">
-                    <strong>
-                      {r.score === null
-                        ? "Profilini tamamla"
-                        : `${r.score} / 100`}
-                    </strong>
-                    <span>Uyum endeksi</span>
-                  </div>
+                  {method === "personalized" && (
+                    <div className="score-row">
+                      <strong>
+                        {r.score === null
+                          ? "Profilini tamamla"
+                          : `${r.score} / 100`}
+                      </strong>
+                      <span>Uyum endeksi</span>
+                    </div>
+                  )}
                   <ul>
                     {r.reasons.map((s) => (
                       <li key={s}>{s}</li>
