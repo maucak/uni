@@ -127,26 +127,51 @@ export async function syncSources(target?: string) {
       source.format === "akdenizAccordion"
         ? /<button\b[^>]*data-target="#[^"]+"[^>]*>([\s\S]*?)<\/button>/gi
         : source.format === "sduAccordion"
-        ? /<div\b[^>]*class="[^"]*soru-btn-link[^"]*"[^>]*>([\s\S]*?)<\/div>/gi
-        : source.format === "card"
-        ? /<div\b[^>]*class="card-link"[^>]*>([\s\S]*?)<\/div>/gi
-        : source.format === "h5"
-        ? /<h5\b[^>]*>([\s\S]*?)<\/h5>/gi
-        : /<strong\b[^>]*>([\s\S]*?)<\/strong>/gi;
+          ? /<div\b[^>]*class="[^"]*soru-btn-link[^"]*"[^>]*>([\s\S]*?)<\/div>/gi
+          : source.format === "card"
+            ? /<div\b[^>]*class="card-link"[^>]*>([\s\S]*?)<\/div>/gi
+            : source.format === "h5"
+              ? /<h5\b[^>]*>([\s\S]*?)<\/h5>/gi
+              : /<strong\b[^>]*>([\s\S]*?)<\/strong>/gi;
     const headings = [...html.matchAll(pattern)].filter(
       (m) =>
-        source.format === "h5" || source.format === "card" || source.format === "sduAccordion" || source.format === "akdenizAccordion" || (source.format === "pauQuestions" && /^S\s*:/i.test(clean(m[1])) && clean(m[1]).includes("?")) || (source.format === "strongQuestions" && clean(m[1]).includes("?")) ||
+        source.format === "h5" ||
+        source.format === "card" ||
+        source.format === "sduAccordion" ||
+        source.format === "akdenizAccordion" ||
+        (source.format === "pauQuestions" &&
+          /^S\s*:/i.test(clean(m[1])) &&
+          clean(m[1]).includes("?")) ||
+        (source.format === "strongQuestions" && clean(m[1]).includes("?")) ||
         (/^\d+[.)]/.test(clean(m[1])) && clean(m[1]).includes("?")),
     );
     let count = 0;
     for (let i = 0; i < headings.length && count < source.limit; i++) {
       const match = headings[i];
-      const title = clean(match[1]).replace(/^S\s*:\s*/i, "").replace(/\s*\+\s*$/, "");
-      if (!title || (!title.includes("?") && source.format !== "akdenizAccordion") || title.length > 250) continue;
-      // Undated prices cannot safely answer current-cost questions.
-      if ((source.id === "sdu-sks" || source.id.startsWith("sdu-oidb-")) && /ücret|fiyat/i.test(title)) continue;
+      const title = clean(match[1])
+        .replace(/^S\s*:\s*/i, "")
+        .replace(/\s*\+\s*$/, "");
       if (
-        source.format !== "akdenizAccordion" && source.id !== "pau-oidb" && !source.id.startsWith("sdu-library-") && !source.id.startsWith("sdu-oidb-") && !(["isubu-ydyo", "isubu-guide", "sdu-ydyo"] as string[]).includes(source.id) && !/kayıt|ders|öğrenci|yurt|yemek|burs|barın|topluluk|belge|danışman|muaf|sınav|internet|kütüphane|başvuru/i.test(
+        !title ||
+        (!title.includes("?") && source.format !== "akdenizAccordion") ||
+        title.length > 250
+      )
+        continue;
+      // Undated prices cannot safely answer current-cost questions.
+      if (
+        (source.id === "sdu-sks" || source.id.startsWith("sdu-oidb-")) &&
+        /ücret|fiyat/i.test(title)
+      )
+        continue;
+      if (
+        source.format !== "akdenizAccordion" &&
+        source.id !== "pau-oidb" &&
+        !source.id.startsWith("sdu-library-") &&
+        !source.id.startsWith("sdu-oidb-") &&
+        !(["isubu-ydyo", "isubu-guide", "sdu-ydyo"] as string[]).includes(
+          source.id,
+        ) &&
+        !/kayıt|ders|öğrenci|yurt|yemek|burs|barın|topluluk|belge|danışman|muaf|sınav|internet|kütüphane|başvuru/i.test(
           title,
         )
       )
@@ -158,7 +183,11 @@ export async function syncSources(target?: string) {
           .slice(match.index! + match[0].length, end)
           .split(/<footer|<h[1-4]\b|<section\b[^>]*class="ana-iletisim"/i)[0],
       ).replace(/\s*Eklenme tarihi\s*:.*/i, "");
-      if (source.id.startsWith("sdu-library-") && /pandemi|covid|ücret|ceza/i.test(title + " " + text)) continue;
+      if (
+        source.id.startsWith("sdu-library-") &&
+        /pandemi|covid|ücret|ceza/i.test(title + " " + text)
+      )
+        continue;
       // Keep the complete parent answer; the indexer splits it without losing the parent.
       if (
         text.length < 35 ||
@@ -174,19 +203,19 @@ export async function syncSources(target?: string) {
       if (seenIds.has(id)) continue;
       seenIds.add(id);
       const topic =
-        (source.id === "isubu-ydyo" || source.id === "sdu-ydyo")
+        source.id === "isubu-ydyo" || source.id === "sdu-ydyo"
           ? "Hazırlık"
           : source.id === "gsb-burs-kredi"
-          ? "Burs ve kredi"
-          : source.scope === "national"
-            ? "Barınma"
-            : /yemek|burs|beslen/i.test(title)
-              ? "Yemek ve destek"
-              : /topluluk|spor|kültür/i.test(title)
-                ? "Kampüs yaşamı"
-                : /muaf|hazırlık|yabancı/i.test(title)
-                  ? "Hazırlık"
-                  : "Öğrenci işlemleri";
+            ? "Burs ve kredi"
+            : source.scope === "national"
+              ? "Barınma"
+              : /yemek|burs|beslen/i.test(title)
+                ? "Yemek ve destek"
+                : /topluluk|spor|kültür/i.test(title)
+                  ? "Kampüs yaşamı"
+                  : /muaf|hazırlık|yabancı/i.test(title)
+                    ? "Hazırlık"
+                    : "Öğrenci işlemleri";
       articles.push({
         id,
         title,

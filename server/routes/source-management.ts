@@ -15,12 +15,10 @@ routes.get("/source-management/access", (_req, res) =>
 );
 routes.use("/source-management", requireUser, (_req, res, next) => {
   if (!sourceManagerAllowed(res.locals.user?.email))
-    return res
-      .status(403)
-      .json({
-        code: "FORBIDDEN",
-        message: "Kaynak yönetimi için yetkin bulunmuyor.",
-      });
+    return res.status(403).json({
+      code: "FORBIDDEN",
+      message: "Kaynak yönetimi için yetkin bulunmuyor.",
+    });
   next();
 });
 routes.get("/source-management", async (_req, res) => {
@@ -42,14 +40,12 @@ routes.post("/source-management/:id/check", async (req, res) => {
   if (!sourceById(req.params.id)) fail(404, "NOT_FOUND", "Kaynak bulunamadı.");
   await registerSources();
   const queued = await enqueueSource(req.params.id);
-  res
-    .status(202)
-    .json({
-      queued,
-      message: queued
-        ? "Kontrol sıraya alındı."
-        : "Bu kaynak için zaten bekleyen bir kontrol var.",
-    });
+  res.status(202).json({
+    queued,
+    message: queued
+      ? "Kontrol sıraya alındı."
+      : "Bu kaynak için zaten bekleyen bir kontrol var.",
+  });
 });
 const scheduleSchema = z
   .object({

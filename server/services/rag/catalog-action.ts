@@ -16,8 +16,9 @@ export async function catalogAction(
       actions: [{ label: "Bana uygun programlar", url: "/oneriler" }],
     };
   if (
-    !force && (!/program|bölüm|mühendislik|mühendisliği/i.test(message) ||
-    !/göster|listele|bulabilir|karşılaştır|araştırmak/i.test(message))
+    !force &&
+    (!/program|bölüm|mühendislik|mühendisliği/i.test(message) ||
+      !/göster|listele|bulabilir|karşılaştır|araştırmak/i.test(message))
   )
     return null;
   const programs = await catalog(),

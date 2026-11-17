@@ -1,14 +1,22 @@
 import type { KnowledgeChunk } from "./knowledge.ts";
 import type { RagContext } from "./context.ts";
-export function educationLevel(text: string): "graduate" | "undergraduate" | null {
-  const value = text.toLocaleLowerCase("tr-TR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g,"i");
-  if (/\blisansustu\b|\byuksek lisans\b|\bdoktora\b|\bmaster\b/.test(value)) return "graduate";
+export function educationLevel(
+  text: string,
+): "graduate" | "undergraduate" | null {
+  const value = text
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i");
+  if (/\blisansustu\b|\byuksek lisans\b|\bdoktora\b|\bmaster\b/.test(value))
+    return "graduate";
   if (/\bonlisans\b|\blisans\b/.test(value)) return "undergraduate";
   return null;
 }
 export function levelCompatible(query: string, title: string) {
-  const requested=educationLevel(query), source=educationLevel(title);
-  return !requested || !source || requested===source;
+  const requested = educationLevel(query),
+    source = educationLevel(title);
+  return !requested || !source || requested === source;
 }
 export function tokens(text: string) {
   const stop = new Set([
@@ -32,28 +40,48 @@ export function tokens(text: string) {
     "miyim",
   ]);
   return (
-    text
-      .toLocaleLowerCase("tr-TR")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/ı/g, "i")
-      .match(/[a-z0-9]+/g) || []
-  )
-    .filter((t) => t.length > 2 && !stop.has(t))
-    // These productive domain terms otherwise split by Turkish possessive/case suffixes
-    // (başvurusu/başvuruları, burs/bursu). Keep ordinary tokens intact for dense reranking.
-    .map(t => {
-      const root=["basvur","burs","kredi","yurt"].find(root=>t.startsWith(root));
-      return root || (t.length > 8 ? t.slice(0, 8) : t);
-    });
+    (
+      text
+        .toLocaleLowerCase("tr-TR")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/ı/g, "i")
+        .match(/[a-z0-9]+/g) || []
+    )
+      .filter((t) => t.length > 2 && !stop.has(t))
+      // These productive domain terms otherwise split by Turkish possessive/case suffixes
+      // (başvurusu/başvuruları, burs/bursu). Keep ordinary tokens intact for dense reranking.
+      .map((t) => {
+        const root = ["basvur", "burs", "kredi", "yurt"].find((root) =>
+          t.startsWith(root),
+        );
+        return root || (t.length > 8 ? t.slice(0, 8) : t);
+      })
+  );
 }
 export function eligible(chunk: KnowledgeChunk, context: RagContext) {
   const a = chunk.article;
   if (a.scope !== "national" && a.scope !== context.university) return false;
-  if(context.subject === "scholarship" && context.scholarshipType === "kyk" && (a.scope !== "national" || !/burs|kredi/i.test(a.sourceTitle)))return false;
-  if(context.subject === "housing" && /GSB.*Burs ve öğrenim kredisi/i.test(a.sourceTitle))return false;
-  const mealScholarship = /yemek.*burs|burs.*yemek|beslenme.*burs/i.test(a.title);
-  if (context.subject === "scholarship" && context.scholarshipType !== "meal" && mealScholarship) return false;
+  if (
+    context.subject === "scholarship" &&
+    context.scholarshipType === "kyk" &&
+    (a.scope !== "national" || !/burs|kredi/i.test(a.sourceTitle))
+  )
+    return false;
+  if (
+    context.subject === "housing" &&
+    /GSB.*Burs ve öğrenim kredisi/i.test(a.sourceTitle)
+  )
+    return false;
+  const mealScholarship = /yemek.*burs|burs.*yemek|beslenme.*burs/i.test(
+    a.title,
+  );
+  if (
+    context.subject === "scholarship" &&
+    context.scholarshipType !== "meal" &&
+    mealScholarship
+  )
+    return false;
   if (a.historical && !context.year) return false;
   if (context.year && a.period) {
     const years = a.period.match(/20\d\d/g)?.map(Number) || [];

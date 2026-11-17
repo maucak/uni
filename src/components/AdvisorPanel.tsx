@@ -153,8 +153,9 @@ export default function AdvisorPanel({
           <MessageSquare size={23} />
           <h4>Danışman alanın hazır.</h4>
           <p>
-            Seçilen sağlayıcının anahtarı sunucu ayarlarına eklendiğinde konuşmaya
-            başlayabilirsin. Bu sırada filtreler ve kişisel öneriler çalışır.
+            Seçilen sağlayıcının anahtarı sunucu ayarlarına eklendiğinde
+            konuşmaya başlayabilirsin. Bu sırada filtreler ve kişisel öneriler
+            çalışır.
           </p>
           <Link to="/yontem">Nasıl çalışacağını öğren</Link>
         </div>
@@ -271,9 +272,9 @@ export default function AdvisorPanel({
         </button>
       </form>
       <p className="advisor-privacy">
-        Gönderdiğinde mesajın, arama ölçütlerin ve öneri bağlamın seçili AI sağlayıcısına
-        iletilir. E-posta ve adın gönderilmez. Konuşmalar hesabında saklanır;
-        geçmişten silebilirsin.
+        Gönderdiğinde mesajın, arama ölçütlerin ve öneri bağlamın seçili AI
+        sağlayıcısına iletilir. E-posta ve adın gönderilmez. Konuşmalar
+        hesabında saklanır; geçmişten silebilirsin.
       </p>
       {conversationId && (
         <button

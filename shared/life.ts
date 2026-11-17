@@ -24,7 +24,13 @@ export type LifeAnswer = {
   feedback?: number | null;
   conversationId?: string;
   retrievalQuery?: string;
-  mode: "conversation" | "generated" | "sources" | "no-evidence" | "clarification" | "action";
+  mode:
+    | "conversation"
+    | "generated"
+    | "sources"
+    | "no-evidence"
+    | "clarification"
+    | "action";
   actions?: { label: string; url: string }[];
   retrieval?: { method: string; elapsedMs: number; corpusVersion: string };
   answer: string;

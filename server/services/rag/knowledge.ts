@@ -209,34 +209,39 @@ export async function indexKnowledge(withEmbeddings = true) {
 
 function mapChunks(rows: any[]): KnowledgeChunk[] {
   return rows.map((r) => ({
-      id: r.id,
+    id: r.id,
+    documentId: r.document_id,
+    hash: r.content_hash,
+    body: r.body,
+    embedding: r.embedding?.map(Number) || null,
+    article: {
+      ...r.metadata,
+      checkedAt: r.source_checked,
+      id: r.external_key,
+      title: r.title,
+      topic: r.topic,
+      text: r.parent_body,
+      url: r.url,
+      sourceTitle: r.source_title,
+      scope: r.scope,
       documentId: r.document_id,
-      hash: r.content_hash,
-      body: r.body,
-      embedding: r.embedding?.map(Number) || null,
-      article: {
-        ...r.metadata,
-        checkedAt: r.source_checked,
-        id: r.external_key,
-        title: r.title,
-        topic: r.topic,
-        text: r.parent_body,
-        url: r.url,
-        sourceTitle: r.source_title,
-        scope: r.scope,
-        documentId: r.document_id,
-        chunkId: r.id,
-        sourceVersion: r.active_version_id,
-      },
-    }));
+      chunkId: r.id,
+      sourceVersion: r.active_version_id,
+    },
+  }));
 }
 // Bounded hydration: Qdrant supplies IDs; PostgreSQL remains authoritative for active public sources.
-export async function loadKnowledgeCandidates(ids: string[]): Promise<KnowledgeChunk[]> {
+export async function loadKnowledgeCandidates(
+  ids: string[],
+): Promise<KnowledgeChunk[]> {
   if (!ids.length) return [];
-  if (ids.length > 40) throw new Error('Too many retrieval candidates');
-  const rows = await pool.query(`SELECT c.id,c.body,c.content_hash,d.id AS document_id,d.external_key,d.title,d.topic,d.body AS parent_body,d.metadata,s.url,s.title AS source_title,s.scope,s.checked_at::date::text AS source_checked,s.active_version_id
+  if (ids.length > 40) throw new Error("Too many retrieval candidates");
+  const rows = await pool.query(
+    `SELECT c.id,c.body,c.content_hash,d.id AS document_id,d.external_key,d.title,d.topic,d.body AS parent_body,d.metadata,s.url,s.title AS source_title,s.scope,s.checked_at::date::text AS source_checked,s.active_version_id
     FROM rag_chunks c JOIN rag_documents d ON d.id=c.document_id
     JOIN rag_sources s ON s.id=d.source_id AND s.active_version_id=d.version_id
-    WHERE s.enabled AND c.id=ANY($1::text[])`, [ids]);
+    WHERE s.enabled AND c.id=ANY($1::text[])`,
+    [ids],
+  );
   return mapChunks(rows.rows);
 }

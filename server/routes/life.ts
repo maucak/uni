@@ -208,21 +208,54 @@ api.post(
       return res.json(turn.cached);
     }
     const { session } = turn;
-    const abort=new AbortController();
-    const disconnected=()=>{if(!res.writableEnded)abort.abort();};
-    res.once('close',disconnected);
+    const abort = new AbortController();
+    const disconnected = () => {
+      if (!res.writableEnded) abort.abort();
+    };
+    res.once("close", disconnected);
     try {
       event("phase", { phase: "searching" });
-      const routed = await routeMessage(input.message, session.history.map(h => ({role:h.role === "user" ? "user" as const : "assistant" as const,text:h.role === "user" ? h.payload.message : h.payload.answer || h.payload.notice || ""})), abort.signal, {userId:session.userId,requestId:session.requestId}, session.context.dialogue, res.locals.user.profile.university || "");
+      const routed = await routeMessage(
+        input.message,
+        session.history.map((h) => ({
+          role: h.role === "user" ? ("user" as const) : ("assistant" as const),
+          text:
+            h.role === "user"
+              ? h.payload.message
+              : h.payload.answer || h.payload.notice || "",
+        })),
+        abort.signal,
+        { userId: session.userId, requestId: session.requestId },
+        session.context.dialogue,
+        res.locals.user.profile.university || "",
+      );
       const effectiveMessage = routed.query || input.message;
-      const context = routed.state ? contextFromPlan(routed.state) : {...session.context,university:"unknown" as const,universityName:"",program:null,year:null,subject:""};
+      const context = routed.state
+        ? contextFromPlan(routed.state)
+        : {
+            ...session.context,
+            university: "unknown" as const,
+            universityName: "",
+            program: null,
+            year: null,
+            subject: "",
+          };
       let response: LifeAnswer;
       let diagnostics;
       let corpusVersion = "none";
-      const action = routed.kind === "catalog" ? await catalogAction(effectiveMessage, true) : null;
+      const action =
+        routed.kind === "catalog"
+          ? await catalogAction(effectiveMessage, true)
+          : null;
       const liveNotice = liveDataNotice(effectiveMessage);
       if (routed.kind !== "information" && routed.kind !== "catalog") {
-        response = { mode: routed.kind === "conversation" ? "conversation" : "clarification", answer: routed.answer || "Sorunu biraz açabilir misin?", notice: routed.notice || "", sources: [] };
+        response = {
+          mode:
+            routed.kind === "conversation" ? "conversation" : "clarification",
+          answer: routed.answer || "Sorunu biraz açabilir misin?",
+          notice: routed.notice || "",
+          sources: [],
+        };
       } else if (action) {
         response = action;
       } else if (liveNotice) {
@@ -255,9 +288,10 @@ api.post(
           answer: "",
           notice: found.sources.length
             ? "Sorunla ilgili kaynaklar bulundu."
-            : context.subject === "scholarship" && context.scholarshipType === "kyk"
-                ? "Sorunu anladım, ancak KYK bursuyla ilgili bu soruyu doğrulayacak bir kaynak mevcut havuzda bulunamadı. KYK yurt bilgilerini burs koşulları yerine kullanamam. GSB’nin resmî burs ve öğrenim kredisi duyurularını kontrol etmelisin."
-                : "Bu soruya yeterince ilgili bir kaynak bulamadım. Konuyu, üniversiteyi veya işlemi biraz daha açık yazabilirsin.",
+            : context.subject === "scholarship" &&
+                context.scholarshipType === "kyk"
+              ? "Sorunu anladım, ancak KYK bursuyla ilgili bu soruyu doğrulayacak bir kaynak mevcut havuzda bulunamadı. KYK yurt bilgilerini burs koşulları yerine kullanamam. GSB’nin resmî burs ve öğrenim kredisi duyurularını kontrol etmelisin."
+              : "Bu soruya yeterince ilgili bir kaynak bulamadım. Konuyu, üniversiteyi veya işlemi biraz daha açık yazabilirsin.",
           sources: found.sources,
           retrievalQuery: query,
           retrieval: {
@@ -268,8 +302,12 @@ api.post(
         };
         event("sources", { sources: found.sources });
         if (found.sources.length)
-          await generateAnswer(session, input.message, response, () =>
-            event("phase", { phase: "answering" }),abort.signal
+          await generateAnswer(
+            session,
+            input.message,
+            response,
+            () => event("phase", { phase: "answering" }),
+            abort.signal,
           );
       }
       response.conversationId = session.id;
@@ -301,10 +339,9 @@ api.post(
         return;
       }
       throw error;
-    }finally{
-      res.removeListener('close',disconnected);
+    } finally {
+      res.removeListener("close", disconnected);
     }
   },
 );
 export default api;
-

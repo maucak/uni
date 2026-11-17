@@ -86,7 +86,16 @@ function SourceCard({
       <div className="source-management-top">
         <div>
           <span className="badge">
-            {s.scope === "national" ? "Türkiye geneli" : s.scope === "sdu" ? "SDÜ" : s.scope === "pau" ? "PAÜ" : s.scope === "akdeniz" ? "Akdeniz Üniversitesi" : "İSUBÜ"} · {status}
+            {s.scope === "national"
+              ? "Türkiye geneli"
+              : s.scope === "sdu"
+                ? "SDÜ"
+                : s.scope === "pau"
+                  ? "PAÜ"
+                  : s.scope === "akdeniz"
+                    ? "Akdeniz Üniversitesi"
+                    : "İSUBÜ"}{" "}
+            · {status}
           </span>
           <h2>
             <a href={s.url} target="_blank" rel="noreferrer">

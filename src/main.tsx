@@ -69,7 +69,14 @@ function App() {
             <Route path="sorular/:id" element={<QuestionDetail />} />
             <Route path="yontem" element={<Method />} />
             <Route path="veri-kaynaklari" element={<Sources />} />
-            <Route path="kaynak-yonetimi" element={<Protected><SourceManagement /></Protected>} />
+            <Route
+              path="kaynak-yonetimi"
+              element={
+                <Protected>
+                  <SourceManagement />
+                </Protected>
+              }
+            />
             <Route
               path="*"
               element={

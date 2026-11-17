@@ -3,7 +3,7 @@ import { ExternalLink, Database } from "lucide-react";
 import { useLoad } from "../lib/useLoad";
 import { PageHeading, Loading, ErrorBox } from "../components/ui";
 export default function Sources() {
-  const management = useLoad<{allowed:boolean}>("/source-management/access");
+  const management = useLoad<{ allowed: boolean }>("/source-management/access");
   const life = useLoad<{
     items: {
       url: string;
@@ -30,7 +30,13 @@ export default function Sources() {
       <PageHeading
         eyebrow="VERİNİN İZİNİ SÜR"
         title="Kaynaklar ve katalog sürümleri."
-        action={management.data?.allowed ? <Link className="button secondary" to="/kaynak-yonetimi">Kaynak yönetimi</Link> : undefined}
+        action={
+          management.data?.allowed ? (
+            <Link className="button secondary" to="/kaynak-yonetimi">
+              Kaynak yönetimi
+            </Link>
+          ) : undefined
+        }
         description="Hangi bilginin nereden geldiğini, ne zaman kontrol edildiğini ve hangi sürümle aktarıldığını incele."
       />
       <section className="panel">
@@ -48,8 +54,17 @@ export default function Sources() {
                 {s.title} <ExternalLink size={13} />
               </a>
               <small>
-                {s.scope === "national" ? "Türkiye geneli" : s.scope === "sdu" ? "SDÜ" : s.scope === "pau" ? "PAÜ" : s.scope === "akdeniz" ? "Akdeniz Üniversitesi" : "İSUBÜ"} · Son
-                kontrol: {new Date(s.checked_at).toLocaleDateString("tr-TR")}
+                {s.scope === "national"
+                  ? "Türkiye geneli"
+                  : s.scope === "sdu"
+                    ? "SDÜ"
+                    : s.scope === "pau"
+                      ? "PAÜ"
+                      : s.scope === "akdeniz"
+                        ? "Akdeniz Üniversitesi"
+                        : "İSUBÜ"}{" "}
+                · Son kontrol:{" "}
+                {new Date(s.checked_at).toLocaleDateString("tr-TR")}
               </small>
             </div>
           ))}

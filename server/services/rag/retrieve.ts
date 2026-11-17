@@ -33,23 +33,37 @@ export async function retrieve(
   options: { semantic?: boolean; reranking?: boolean; cache?: boolean } = {},
 ): Promise<RagResult> {
   const start = performance.now();
-  const backend = process.env.RAG_SEARCH_BACKEND || 'local';
-  if (!['local', 'qdrant'].includes(backend)) throw new Error('Geçersiz RAG_SEARCH_BACKEND.');
+  const backend = process.env.RAG_SEARCH_BACKEND || "local";
+  if (!["local", "qdrant"].includes(backend))
+    throw new Error("Geçersiz RAG_SEARCH_BACKEND.");
   const warnings: string[] = [];
   let remote: Awaited<ReturnType<typeof qdrantCandidates>> | undefined;
-  if (backend === 'qdrant') {
+  if (backend === "qdrant") {
     let vector: number[] | undefined;
     if (options.semantic !== false) {
-      try { [vector] = await embed([query], 'query'); }
-      catch { warnings.push('semantic-unavailable'); }
+      try {
+        [vector] = await embed([query], "query");
+      } catch {
+        warnings.push("semantic-unavailable");
+      }
     }
     remote = await qdrantCandidates(query, context, topic, vector);
   }
-  const index = remote ? {
-    version: remote.version, embeddingCoverage: 1,
-    chunks: await loadKnowledgeCandidates([...new Set([...remote.lexical, ...remote.dense].map(h => h.id))]),
-  } : await loadKnowledge();
-  const chunks = index.chunks.filter(c => eligible(c, context) && levelCompatible(query, c.article.title) && (!topic || c.article.topic === topic));
+  const index = remote
+    ? {
+        version: remote.version,
+        embeddingCoverage: 1,
+        chunks: await loadKnowledgeCandidates([
+          ...new Set([...remote.lexical, ...remote.dense].map((h) => h.id)),
+        ]),
+      }
+    : await loadKnowledge();
+  const chunks = index.chunks.filter(
+    (c) =>
+      eligible(c, context) &&
+      levelCompatible(query, c.article.title) &&
+      (!topic || c.article.topic === topic),
+  );
   const key = digest(
     JSON.stringify({
       query,
@@ -70,15 +84,22 @@ export async function retrieve(
     value.diagnostics.elapsedMs = Math.round(performance.now() - start);
     return value;
   }
-  const hydrate = (hits: { id: string; score: number }[]) => hits.flatMap(hit => {
-    const chunk = chunks.find(c => c.id === hit.id);
-    return chunk ? [{ chunk, score: hit.score }] : [];
-  });
-  const lexical = remote ? hydrate(remote.lexical) : bm25(query, chunks).slice(0, 20);
+  const hydrate = (hits: { id: string; score: number }[]) =>
+    hits.flatMap((hit) => {
+      const chunk = chunks.find((c) => c.id === hit.id);
+      return chunk ? [{ chunk, score: hit.score }] : [];
+    });
+  const lexical = remote
+    ? hydrate(remote.lexical)
+    : bm25(query, chunks).slice(0, 20);
   let dense: { chunk: (typeof chunks)[number]; score: number }[] = [],
     semantic = !!remote?.dense.length;
   if (remote) dense = hydrate(remote.dense);
-  if (!remote && options.semantic !== false && chunks.some((c) => c.embedding)) {
+  if (
+    !remote &&
+    options.semantic !== false &&
+    chunks.some((c) => c.embedding)
+  ) {
     try {
       const [vector] = await embed([query], "query");
       dense = chunks
@@ -92,10 +113,15 @@ export async function retrieve(
     }
   }
   const seenParents = new Set<string>();
-  const fused=fuse(lexical,dense);
-  const protectedIds=new Set([...lexical.slice(0,2),...dense.slice(0,2)].map(r=>r.chunk.id));
+  const fused = fuse(lexical, dense);
+  const protectedIds = new Set(
+    [...lexical.slice(0, 2), ...dense.slice(0, 2)].map((r) => r.chunk.id),
+  );
   // Preserve each retriever's strongest hits; RRF overlap alone can crowd out a useful lexical match.
-  const candidates=[...fused.filter(r=>protectedIds.has(r.chunk.id)),...fused.filter(r=>!protectedIds.has(r.chunk.id))];
+  const candidates = [
+    ...fused.filter((r) => protectedIds.has(r.chunk.id)),
+    ...fused.filter((r) => !protectedIds.has(r.chunk.id)),
+  ];
   let ranked = candidates
     .filter((hit) => {
       if (seenParents.has(hit.chunk.documentId)) return false;
@@ -122,10 +148,11 @@ export async function retrieve(
   // Cross-encoder values are relevance scores, not confidence probabilities.
   // Keep weak-only candidates out instead of always forcing four sources.
   const floor = reranked ? Math.max(0.12, (ranked[0]?.rerank || 0) * 0.35) : 0;
-  const denseLeaders=new Set(dense.slice(0,2).map(r=>r.chunk.id));
+  const denseLeaders = new Set(dense.slice(0, 2).map((r) => r.chunk.id));
   const accepted = ranked.filter((r) =>
     reranked
-      ? r.rerank! >= floor || (denseLeaders.has(r.chunk.id) && r.lexical > 0 && r.rerank! >= 0.05)
+      ? r.rerank! >= floor ||
+        (denseLeaders.has(r.chunk.id) && r.lexical > 0 && r.rerank! >= 0.05)
       : semantic
         ? r.lexical > 0 && r.semantic >= 0.84
         : r.lexical > 0,
@@ -150,14 +177,12 @@ export async function retrieve(
     embeddingCoverage: index.embeddingCoverage,
     elapsedMs: Math.round(performance.now() - start),
     warnings,
-    candidates: ranked
-      .slice(0, 10)
-      .map((r) => ({
-        id: r.chunk.article.id,
-        lexical: r.lexical,
-        semantic: r.semantic,
-        rerank: r.rerank,
-      })),
+    candidates: ranked.slice(0, 10).map((r) => ({
+      id: r.chunk.article.id,
+      lexical: r.lexical,
+      semantic: r.semantic,
+      rerank: r.rerank,
+    })),
   };
   const value = { sources, diagnostics, model: embeddingKey };
   if (options.cache !== false && reranked && semantic) {
