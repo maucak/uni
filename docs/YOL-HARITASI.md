@@ -28,18 +28,18 @@ Her haftanın sonunda çıkış ölçütü tarayıcıda denenir; geçmeyen iş b
 - [x] Topluluk/doğrulama/mentorluk/bildirim/moderasyon veri modeli ve API taslağı: `docs/veri-modeli-v2.md`
 - [x] Öneri temel yöntemi (#2)
 - [x] Yedekleme ve geri yükleme (#15)
-- [ ] Değerlendirme script iskeletleri (#4, #7)
+- [x] Değerlendirme script iskeletleri (#4, #7)
 - [ ] Ekip: RAG soru setinin ilk 30 sorusu (#6), aday profilleri (#3), kullanıcı çalışması için 8–10 kişi
 
 **Çıkış:** Yeni hesap e-postasını doğrular ve parolasını sıfırlar; karar kaydı ile veri modeli onaylı.
 
 ### 2. hafta · 24–30 Kasım · Topluluk katmanı
-- [ ] Üniversite ve bölüm toplulukları, etiketler, arama, kabul edilen yanıt (015)
-- [ ] Deneyim kaydı: konu, program, yıl ve yazarın o dönemki durumu; resmi bilgiden ayrı gösterilir (015)
-- [ ] Doğrulama: kurumsal e-posta ve özel depoda belge; `pending/approved/rejected/revoked` durumları; inceleme ekranı; rozet (016)
-- [ ] İtibar: sürümlü kurallar, kendine oy ve tekrar engeli (016)
+- [x] Üniversite ve bölüm toplulukları, etiketler, arama, kabul edilen yanıt (015)
+- [x] Deneyim kaydı: konu, program, yıl ve yazarın o dönemki durumu; resmi bilgiden ayrı gösterilir (015)
+- [x] Doğrulama: kurumsal e-posta ve özel depoda belge; `pending/approved/rejected/revoked` durumları; inceleme ekranı; rozet (016)
+- [x] İtibar: sürümlü kurallar, kendine oy ve tekrar engeli (016)
 - [ ] Mentorluk: profil ve talep durumları (017)
-- [ ] Uygulama içi bildirimler (018)
+- [x] Uygulama içi bildirimler (018)
 
 **Çıkış:** Aday soru sorar, doğrulanmış öğrenci rozetle yanıtlar, mentorluk talebi kabul edilir.
 
@@ -115,6 +115,11 @@ En yeni en üstte. Bir iş bitince bir satır ekleyin.
 
 | Tarih | Ne yapıldı | PR |
 |---|---|---|
+| 2026-11-17 | Doğrulama, roller, itibar, moderatör gizleme (016) | #30 |
+| 2026-11-17 | CI düzeltmesi: birim testleri veritabanısız | #29 |
+| 2026-11-17 | Bildirimler (018) | #28 |
+| 2026-11-17 | Değerlendirme script'leri; veri dosyaları ekipte | #27 |
+| 2026-11-17 | Topluluklar, arama, kabul edilen yanıt, deneyimler (015) | #26 |
 | 2026-11-17 | Hesap: e-posta doğrulama, parola sıfırlama/değiştirme, rol beyanı (014) | #23 |
 | 2026-11-17 | Yedekleme/geri yükleme; Windows'ta pg_dump ayrıca kurulmalı | #22 |
 | 2026-11-17 | Öneri temel yöntemi (`method=baseline`) | #21 |
