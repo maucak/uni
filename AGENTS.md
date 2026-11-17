@@ -31,6 +31,7 @@ Bir işi bitirince İlerleme günlüğüne bir satır ekle (tarih, ne yapıldı,
 - `npm run check`: typecheck, Prettier biçim kontrolü ve birim testleri. Her PR'dan önce çalıştırılır.
 - `npm run test:integration`: çalışan API'ye karşı uçtan uca akışları dener. API, oturum veya veritabanına dokunan her değişiklikte çalıştırılır. Yeni modül, kendi akışını `scripts/smoke.ts` dosyasına ya da kendi `scripts/*-check.ts` script'ine ekler.
 - Yeni davranış yeni test gerektirir. Test edilmeyen şey "çalışıyor" diye raporlanmaz.
+- Birim testleri veritabanı olmadan çalışır (CI'da `DATABASE_URL` yok); `server/db.ts` içe aktaran modülü teste çekme, saf kuralları ayrı dosyaya koy.
 
 ## İş akışı
 

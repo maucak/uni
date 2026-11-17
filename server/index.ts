@@ -12,6 +12,7 @@ import {
   scheduleDocumentCleanup,
   seedEmailDomains,
 } from "./services/verification.ts";
+import notificationRoutes from "./routes/notifications.ts";
 import "dotenv/config";
 import express from "express";
 import cookieParser from "cookie-parser";
@@ -72,6 +73,7 @@ api.use(
   experienceRoutes,
   advisorRoutes,
   lifeRoutes,
+  notificationRoutes,
   sourceManagementRoutes,
   verificationRoutes,
   adminRoutes,

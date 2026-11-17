@@ -15,6 +15,8 @@
     "rag:refresh": "node scripts/rag-refresh.ts",
     "rag:evaluate": "node scripts/rag-evaluate.ts",
     "rag:report": "node scripts/rag-report.ts",
+    "eval:recommend": "node scripts/eval-recommend.ts",
+    "eval:rag": "node scripts/eval-rag.ts",
     "rag:index:local": "node scripts/rag-index.ts --lexical-only",
     "catalog:pilot": "node scripts/catalog-import.ts data/pilot-isubu-2026-10.json --apply",
     "dev": "node scripts/dev.ts",

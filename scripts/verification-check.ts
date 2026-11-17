@@ -225,6 +225,15 @@ try {
     c.cookie,
   );
   assert.equal((await publicOf(b.id)).badges.length, 0);
+  const notes = (await call("/notifications", "GET", undefined, b.cookie)).data
+    .items as { kind: string; payload: { verificationId?: string } }[];
+  assert.equal(
+    notes.filter(
+      (n) =>
+        n.kind === "verification_decided" && n.payload.verificationId === docId,
+    ).length,
+    2,
+  );
 
   // Kendi başvurusunu onaylayamaz.
   const own = await call(docQuery, "POST", png, c.cookie, 201, "image/png");

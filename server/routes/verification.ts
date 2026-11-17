@@ -8,6 +8,7 @@ import { requireRole, requireUser, requireVerifiedEmail } from "../auth.ts";
 import { fail } from "../errors.ts";
 import { generateToken, hashToken } from "../services/account-tokens.ts";
 import { sendMail } from "../services/mail.ts";
+import { notify } from "../services/notifications.ts";
 import {
   detectDocumentType,
   domainMatches,
@@ -358,9 +359,20 @@ api.put("/admin/verifications/:id", ...reviewer, async (req, res) => {
        email_token_hash=NULL,email_token_expires_at=NULL WHERE id=$1`,
       [id, decision.status, res.locals.user.id, data.note],
     );
-    return decision.status;
+    return { status: decision.status, userId: r.rows[0].user_id as string };
   });
-  res.json({ id, status: result });
+  const titles = {
+    approved: "Doğrulama başvurun onaylandı",
+    rejected: "Doğrulama başvurun reddedildi",
+    revoked: "Doğrulaman kaldırıldı",
+  } as const;
+  await notify(
+    result.userId,
+    "verification_decided",
+    { verificationId: id, title: titles[result.status] },
+    res.locals.user.id,
+  );
+  res.json({ id, status: result.status });
 });
 
 // Herkese açık profil: ad, rozetler ve kapsamı, itibar.
