@@ -1,0 +1,7 @@
+# Herkes aynı satır sonunu kullanır (Windows/macOS/Linux farkı diff'e girmez).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pdf binary
+*.docx binary
+*.onnx binary
