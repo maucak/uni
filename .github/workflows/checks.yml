@@ -1,7 +1,11 @@
 name: Project checks
 on:
   push:
+    branches: [main]
   pull_request:
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   checks:
     runs-on: ubuntu-latest
@@ -12,5 +16,6 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
+      - run: npm run format:check
       - run: npm run build
       - run: npm test

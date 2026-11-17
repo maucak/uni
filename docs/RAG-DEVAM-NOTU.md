@@ -1,3 +1,5 @@
+> **Tarihsel not (21 Ekim 2026).** Güncel durum için [YOL-HARITASI.md](YOL-HARITASI.md).
+
 # RAG geliştirme — duraklama noktası
 
 21 Ekim 2026. Kullanıcı şarjı bittiği için çalışmayı durdurdu; devam isteğine kadar yeni geliştirme yapılmayacak.
