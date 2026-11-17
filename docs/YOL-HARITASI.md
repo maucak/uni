@@ -23,11 +23,11 @@ Finalde proje planının (docs/proje-plani.md §4) 11 modülünün tamamı tesli
 Her haftanın sonunda çıkış ölçütü tarayıcıda denenir; geçmeyen iş bir sonraki haftanın ilk işi olur.
 
 ### 1. hafta · 17–23 Kasım · Temel ve tasarım kararları
-- [ ] Hesap: e-posta doğrulama, parola sıfırlama, rol geçişi aday → öğrenci → mezun (migration 014)
-- [ ] Şifreli mesajlaşma karar kaydı: `docs/karar-mesajlasma.md`
-- [ ] Topluluk/doğrulama/mentorluk/bildirim/moderasyon veri modeli ve API taslağı: `docs/veri-modeli-v2.md`
-- [ ] Öneri temel yöntemi (#2)
-- [ ] Yedekleme ve geri yükleme (#15)
+- [x] Hesap: e-posta doğrulama, parola sıfırlama, rol geçişi aday → öğrenci → mezun (migration 014)
+- [x] Şifreli mesajlaşma karar kaydı: `docs/karar-mesajlasma.md`
+- [x] Topluluk/doğrulama/mentorluk/bildirim/moderasyon veri modeli ve API taslağı: `docs/veri-modeli-v2.md`
+- [x] Öneri temel yöntemi (#2)
+- [x] Yedekleme ve geri yükleme (#15)
 - [ ] Değerlendirme script iskeletleri (#4, #7)
 - [ ] Ekip: RAG soru setinin ilk 30 sorusu (#6), aday profilleri (#3), kullanıcı çalışması için 8–10 kişi
 
@@ -115,5 +115,9 @@ En yeni en üstte. Bir iş bitince bir satır ekleyin.
 
 | Tarih | Ne yapıldı | PR |
 |---|---|---|
+| 2026-11-17 | Hesap: e-posta doğrulama, parola sıfırlama/değiştirme, rol beyanı (014) | #23 |
+| 2026-11-17 | Yedekleme/geri yükleme; Windows'ta pg_dump ayrıca kurulmalı | #22 |
+| 2026-11-17 | Öneri temel yöntemi (`method=baseline`) | #21 |
+| 2026-11-17 | v2 veri modeli ve mesajlaşma karar kaydı | #20 |
 | 2026-11-17 | AGENTS.md, Linux ajan veritabanı script'i, port ayarları, 4 haftalık plan | — |
 | 2026-11-17 | RAG çalışması depoya alındı, ekip düzeni, 17 issue açıldı | #1 |
