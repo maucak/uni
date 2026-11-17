@@ -6,6 +6,7 @@ import communityRoutes from "./routes/community.ts";
 import experienceRoutes from "./routes/experiences.ts";
 import advisorRoutes from "./routes/advisor.ts";
 import lifeRoutes from "./routes/life.ts";
+import notificationRoutes from "./routes/notifications.ts";
 import "dotenv/config";
 import express from "express";
 import cookieParser from "cookie-parser";
@@ -66,6 +67,7 @@ api.use(
   experienceRoutes,
   advisorRoutes,
   lifeRoutes,
+  notificationRoutes,
   sourceManagementRoutes,
 );
 app.use("/api", (_req, res) =>

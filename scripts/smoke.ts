@@ -213,6 +213,45 @@ try {
     b,
     201,
   );
+  // 018: bildirimler. A soru sordu, B yanıtladı -> A'ya bildirim.
+  await request("/notifications", "GET", undefined, undefined, 401);
+  const inboxA = (await request("/notifications?unread=1", "GET", undefined, a))
+    .data;
+  assert.equal(inboxA.unreadCount, 1);
+  assert.equal(inboxA.items[0].kind, "answer_received");
+  assert.equal(inboxA.items[0].payload.questionId, q.id);
+  assert.deepEqual(Object.keys(inboxA.items[0].payload).sort(), [
+    "questionId",
+    "title",
+  ]);
+  const notificationId = inboxA.items[0].id;
+  // B kendi eylemi ve başkasının bildirimi için bildirim alamaz/işaretleyemez.
+  assert.equal(
+    (await request("/notifications", "GET", undefined, b)).data.unreadCount,
+    0,
+  );
+  await request(
+    `/notifications/${notificationId}/read`,
+    "PUT",
+    undefined,
+    b,
+    404,
+  );
+  assert.equal(
+    (await request("/notifications?unread=1", "GET", undefined, a)).data
+      .unreadCount,
+    1,
+  );
+  await request(`/notifications/${notificationId}/read`, "PUT", undefined, a);
+  const afterRead = (
+    await request("/notifications?unread=1", "GET", undefined, a)
+  ).data;
+  assert.equal(afterRead.unreadCount, 0);
+  assert.equal(afterRead.items.length, 0);
+  assert.equal(
+    (await request("/notifications", "GET", undefined, a)).data.items[0].read,
+    true,
+  );
   const answer = (await request(`/questions/${q.id}`)).data.answers[0];
   await request(`/answers/${answer.id}/vote`, "PUT", undefined, b, 400);
   await request(`/answers/${answer.id}/vote`, "PUT", undefined, a);
@@ -240,6 +279,21 @@ try {
     .data;
   assert.equal(accepted.acceptedAnswerId, answer.id);
   assert.equal(accepted.answers[0].accepted, true);
+  // 018: kabul edilen yanıtta B'ye bildirim gider; A kendi eyleminden almaz.
+  const inboxB = (await request("/notifications?unread=1", "GET", undefined, b))
+    .data;
+  assert.equal(inboxB.unreadCount, 1);
+  assert.equal(inboxB.items[0].kind, "answer_accepted");
+  assert.equal(inboxB.items[0].payload.answerId, answer.id);
+  assert.equal(
+    (await request("/notifications", "GET", undefined, a)).data.unreadCount,
+    0,
+  );
+  await request("/notifications/read-all", "PUT", undefined, b);
+  assert.equal(
+    (await request("/notifications", "GET", undefined, b)).data.unreadCount,
+    0,
+  );
   const found = (
     await request(
       `/questions?${new URLSearchParams({ communityId: communities[0].id, q: "otomatik entegrasyon" })}`,
@@ -426,7 +480,7 @@ try {
     emailA,
   );
   console.log(
-    "PASS: hesap/profil, filtre/öneri, kalıcılık, sahiplik, sıra çakışması, CSRF, soru/yanıt, yinelenen oy, kabul edilen yanıt, Türkçe arama, etiket/gizli içerik, deneyim oy/sahiplik, oturum iptali, e-posta doğrulama, parola sıfırlama/değiştirme.",
+    "PASS: hesap/profil, filtre/öneri, kalıcılık, sahiplik, sıra çakışması, CSRF, soru/yanıt, yinelenen oy, kabul edilen yanıt, Türkçe arama, etiket/gizli içerik, deneyim oy/sahiplik, oturum iptali, e-posta doğrulama, parola sıfırlama/değiştirme, bildirimler.",
   );
 } finally {
   if (userIds.length) {

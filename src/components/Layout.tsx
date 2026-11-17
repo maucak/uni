@@ -24,6 +24,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useStore } from "../lib/store";
+import { NotificationBell } from "./NotificationBell";
 const nav = [
   ["/", "Genel bakış", LayoutGrid],
   ["/kampus", "Kampüs yaşamı", GraduationCap],
@@ -156,6 +157,7 @@ export function Layout() {
             <span className="topbar-dot" /> Üniversite yolculuğun burada başlar
           </span>
           <div>
+            {user && <NotificationBell />}
             <span className="pilot-label">Geliştirme sürümü</span>
             {!user && (
               <Link to="/kayit">

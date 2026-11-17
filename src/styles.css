@@ -3461,3 +3461,76 @@ input[type="checkbox"] {
     grid-template-columns: 1fr;
   }
 }
+.bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  color: #6b7178;
+}
+.bell:hover {
+  background: #ebecee;
+}
+.bell-count {
+  position: absolute;
+  top: 1px;
+  right: 0;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #cb7351;
+  color: #fff;
+  font-size: 9px;
+  line-height: 16px;
+  text-align: center;
+}
+.notification-list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.notification-item {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: #52585e;
+}
+.notification-item:hover {
+  background: #fafafa;
+}
+.notification-item.unread {
+  background: #fbf4f0;
+  border-color: #efd9cf;
+}
+.notification-item > span {
+  display: grid;
+  gap: 3px;
+  flex: 1;
+}
+.notification-item em {
+  font-style: normal;
+  font-size: 13px;
+}
+.notification-item small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.notification-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #cb7351;
+  margin-top: 6px;
+}
