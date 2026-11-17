@@ -7,7 +7,12 @@ import { fail } from "../errors.ts";
 import { catalog, catalogVersion } from "../catalog.ts";
 import { searchFromParams } from "../../shared/search.ts";
 import { filterPrograms, sortPrograms } from "../services/search.ts";
-import { recommend, algorithmVersion } from "../services/recommendation.ts";
+import {
+  recommend,
+  baselineRecommend,
+  algorithmVersion,
+  baselineAlgorithmVersion,
+} from "../services/recommendation.ts";
 const api = Router();
 api.get("/programs", async (req, res) => {
   const state = searchFromParams(
@@ -94,6 +99,10 @@ api.post("/recommendations", requireUser, async (req, res) => {
       z.record(z.string(), z.string()).parse(req.body?.filters || {}),
     ),
   );
+  const method = z
+    .enum(["personalized", "baseline"])
+    .default("personalized")
+    .parse(req.query.method ?? req.body?.method);
   const input = res.locals.user.profile;
   const programs = await catalog();
   const candidates = filterPrograms(programs, state);
@@ -102,7 +111,12 @@ api.post("/recommendations", requireUser, async (req, res) => {
       state.dataKind === "all" ||
       (state.dataKind === "real" ? !p.isSample : p.isSample),
   );
-  const results = recommend(candidates, input, corpus);
+  const results =
+    method === "baseline"
+      ? baselineRecommend(candidates, input)
+      : recommend(candidates, input, corpus);
+  const usedVersion =
+    method === "baseline" ? baselineAlgorithmVersion : algorithmVersion;
   const version = programs[0]?.catalogVersion || (await catalogVersion());
   const id = randomUUID();
   await pool.query(
@@ -110,9 +124,9 @@ api.post("/recommendations", requireUser, async (req, res) => {
     [
       id,
       res.locals.user.id,
-      algorithmVersion,
+      usedVersion,
       version,
-      JSON.stringify({ profile: input, filters: state }),
+      JSON.stringify({ method, profile: input, filters: state }),
       JSON.stringify(
         results.map((r) => ({
           id: r.program.id,
@@ -122,7 +136,13 @@ api.post("/recommendations", requireUser, async (req, res) => {
       ),
     ],
   );
-  res.json({ id, algorithmVersion, catalogVersion: version, items: results });
+  res.json({
+    id,
+    method,
+    algorithmVersion: usedVersion,
+    catalogVersion: version,
+    items: results,
+  });
 });
 api.post("/recommendations/:id/feedback", requireUser, async (req, res) => {
   const runId = z.uuid().parse(req.params.id);

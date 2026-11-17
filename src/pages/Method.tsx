@@ -50,6 +50,18 @@ export default function Method() {
             edilmesi kullanıcı kontrolündedir.
           </p>
         </section>
+        <section className="panel">
+          <span className="section-number">05</span>
+          <h2>Temel yöntem (karşılaştırma için)</h2>
+          <p>
+            Öneri sayfasında yöntemi "Temel" olarak seçebilirsin. Bu yöntem aynı
+            kesin filtreleri uygular, ardından programları yalnızca son başarı
+            sırasına göre dizer; sırası bilinmeyenler sonda yer alır. İlgi
+            metnin ve öncelik ağırlıkların kullanılmaz. Amaç, kişiselleştirilmiş
+            yöntemin sıralamayı gerçekten değiştirip değiştirmediğini
+            ölçebilmektir; bir üstünlük iddiası değildir.
+          </p>
+        </section>
       </div>
       <section className="panel source-panel">
         <h2>Mevcut veri kaynağı</h2>

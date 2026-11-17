@@ -79,6 +79,26 @@ try {
   const rec = (await request("/recommendations", "POST", {}, a)).data;
   assert(rec.items.length);
   assert(rec.items.every((r: any) => r.score >= 0 && r.score <= 100));
+  assert.equal(rec.method, "personalized");
+  const baselineRun = (
+    await request("/recommendations?method=baseline", "POST", {}, a)
+  ).data;
+  assert.equal(baselineRun.method, "baseline");
+  assert.match(baselineRun.algorithmVersion, /^baseline/);
+  assert(baselineRun.items.length);
+  const known = baselineRun.items.filter((r: any) => r.program.rank !== null);
+  assert(
+    known.every(
+      (r: any, i: number) =>
+        i === 0 || known[i - 1].program.rank <= r.program.rank,
+    ),
+  );
+  assert(
+    baselineRun.items.findIndex((r: any) => r.program.rank === null) === -1 ||
+      baselineRun.items
+        .slice(known.length)
+        .every((r: any) => r.program.rank === null),
+  );
   const list = (
     await request("/preference-lists", "POST", { name: "Test listesi" }, a, 201)
   ).data;

@@ -2,6 +2,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   recommend,
+  baselineRecommend,
+  baselineAlgorithmVersion,
+  algorithmVersion,
   cosine,
   tokenize,
 } from "../server/services/recommendation.ts";
@@ -109,4 +112,42 @@ test("Eksik ilgi verisi kapsamı azaltır ve olumlu eşleşmeye dönüşmez", ()
   const r = recommend([program("a")], p)[0];
   assert.equal(r.coverage, 0.5);
   assert.equal(r.score, 50);
+});
+const mixed = () => [
+  program("d", { rank: null }),
+  program("c", { rank: 5000 }),
+  program("b", { rank: 90000 }),
+  program("a", { rank: 5000 }),
+  program("e", { scoreType: "EA", rank: 1 }),
+  program("f", { universityType: "Vakıf", rank: 2 }),
+];
+test("İki yöntem aynı kesin filtreyle aynı aday kümesini verir", () => {
+  const p = { ...defaultProfile, universityType: "Devlet" as const };
+  const ids = (r: { program: Program }[]) => r.map((x) => x.program.id).sort();
+  assert.deepEqual(
+    ids(baselineRecommend(mixed(), p)),
+    ids(recommend(mixed(), p)),
+  );
+  assert.deepEqual(ids(baselineRecommend(mixed(), p)), ["a", "b", "c", "d"]);
+  assert.notEqual(baselineAlgorithmVersion, algorithmVersion);
+});
+test("Temel yöntem ilgi alanı ve ağırlıktan bağımsız, deterministik", () => {
+  const first = baselineRecommend(mixed(), {
+    ...defaultProfile,
+    interests: "yazılım algoritma",
+    cities: ["İzmir"],
+  }).map((r) => r.program.id);
+  const second = baselineRecommend([...mixed()].reverse(), {
+    ...defaultProfile,
+    interests: "hukuk",
+    weights: { interest: 0, city: 5, language: 5, budget: 5 },
+  }).map((r) => r.program.id);
+  assert.deepEqual(first, second);
+  assert.deepEqual(first, ["f", "a", "c", "b", "d"]);
+});
+test("Temel yöntemde bilinmeyen sıra sona gider", () => {
+  const r = baselineRecommend(mixed(), defaultProfile);
+  assert.equal(r[r.length - 1].program.id, "d");
+  assert.equal(r[r.length - 1].program.rank, null);
+  assert(r.every((x) => x.score === null));
 });
