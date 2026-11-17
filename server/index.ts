@@ -25,6 +25,20 @@ import { pool } from "./db.ts";
 import { applyAdminEmails, session } from "./auth.ts";
 const app = express();
 app.disable("x-powered-by");
+// Ters vekil (Caddy/Nginx) arkasında Secure çerez ve hız sınırı doğru istemciyi
+// görsün diye açılır: TRUST_PROXY=1 (atlama sayısı), "loopback" ya da CIDR listesi.
+const trustProxy = process.env.TRUST_PROXY?.trim();
+if (trustProxy)
+  app.set(
+    "trust proxy",
+    /^\d+$/.test(trustProxy)
+      ? Number(trustProxy)
+      : trustProxy === "true"
+        ? true
+        : trustProxy === "false"
+          ? false
+          : trustProxy,
+  );
 app.use(
   helmet({
     contentSecurityPolicy:
@@ -128,8 +142,10 @@ app.use(
 await applyAdminEmails();
 await seedEmailDomains();
 scheduleDocumentCleanup();
-const server = app.listen(Number(process.env.PORT || 3001), "127.0.0.1", () =>
-  console.log(`API hazır: http://127.0.0.1:${process.env.PORT || 3001}`),
+// Konteynerde HOST=0.0.0.0 verilir; yayın yine yalnızca compose'daki 127.0.0.1 eşlemesiyle olur.
+const host = process.env.HOST || "127.0.0.1";
+const server = app.listen(Number(process.env.PORT || 3001), host, () =>
+  console.log(`API hazır: http://${host}:${process.env.PORT || 3001}`),
 );
 function shutdown() {
   server.close(() => void pool.end().then(() => process.exit(0)));

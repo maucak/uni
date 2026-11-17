@@ -122,6 +122,10 @@ Aynı komutlar Windows PowerShell, macOS ve Linux'ta çalışır. Geri yükleme 
 - **Düzenli yedek önerisi:** önemli bir değişiklikten (migration, katalog içe aktarma) önce ve demo ya da teslim öncesi günlük `npm run db:backup` çalıştırın. Ara sıra bir yedeği `kampus_restore` gibi ayrı bir veritabanına geri yükleyerek denemek, yedeğin gerçekten işe yaradığını gösterir.
 - `npm run db:backup-check`, `kampus_backup` veritabanını migrate edip seed'ler, bir test kullanıcısı ekler, yedekler, `kampus_restore` veritabanına (her çalıştırmada silinip yeniden oluşturulur) geri yükler ve sayıları karşılaştırır. Sonuç `PASS` ya da `FAIL` yazılır.
 
+## Sunucuda dağıtım
+
+Docker Compose ile tek sunucu kurulumu, HTTPS ters vekil örneği, yedekleme ve güncelleme adımları için [docs/dagitim.md](docs/dagitim.md).
+
 ## Depo düzeni
 
 ```text

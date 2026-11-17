@@ -1,0 +1,10 @@
+node_modules
+var
+.env
+.env.*
+!.env.production.example
+dist
+.git
+.github
+*.log
+coverage

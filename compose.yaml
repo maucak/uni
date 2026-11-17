@@ -1,0 +1,60 @@
+# Tek sunucu dağıtımı. Gizli değerler .env.production dosyasından gelir (docs/dagitim.md).
+# Kullanım: docker compose --env-file .env.production up -d --build
+x-app: &app
+  build: .
+  image: kampuspusula:latest
+  env_file: .env.production
+  environment:
+    DATABASE_URL: postgres://kampus:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env.production içinde tanımlı olmalı}@db:5432/kampuspusula
+  volumes:
+    - app_var:/app/var
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kampus
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env.production içinde tanımlı olmalı}
+      POSTGRES_DB: kampuspusula
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kampus -d kampuspusula"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  migrate:
+    <<: *app
+    command: ["npm", "run", "db:migrate"]
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *app
+    restart: unless-stopped
+    command: ["node", "server/index.ts"]
+    ports:
+      - "127.0.0.1:8080:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    <<: *app
+    restart: unless-stopped
+    command: ["npm", "run", "sources:worker"]
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  db_data:
+  app_var:

@@ -5,6 +5,7 @@ var/
 .env
 .env.*
 !.env.example
+!.env.production.example
 *.log
 coverage/
 playwright-report/
