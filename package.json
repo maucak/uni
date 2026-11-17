@@ -34,7 +34,7 @@
     "db:restore": "node scripts/db-restore.ts",
     "db:backup-check": "node scripts/backup-check.ts",
     "test": "node --test tests/*.test.ts",
-    "test:integration": "node scripts/smoke.ts && node scripts/verification-check.ts",
+    "test:integration": "node scripts/smoke.ts && node scripts/verification-check.ts && node scripts/mentorship-check.ts",
     "catalog:import": "node scripts/catalog-import.ts",
     "db:update-local": "node scripts/database-update.ts",
     "catalog:osym": "node scripts/catalog-import.ts data/osym-2026-all.json --apply",

@@ -8,6 +8,7 @@ import advisorRoutes from "./routes/advisor.ts";
 import lifeRoutes from "./routes/life.ts";
 import verificationRoutes from "./routes/verification.ts";
 import adminRoutes from "./routes/admin.ts";
+import mentorshipRoutes from "./routes/mentorship.ts";
 import {
   scheduleDocumentCleanup,
   seedEmailDomains,
@@ -77,6 +78,7 @@ api.use(
   sourceManagementRoutes,
   verificationRoutes,
   adminRoutes,
+  mentorshipRoutes,
 );
 app.use("/api", (_req, res) =>
   res
