@@ -108,6 +108,15 @@ API:
 - İnceleyici: `GET /admin/verifications?status=`, `GET /admin/verifications/:id/document`, `PUT /admin/verifications/:id` (approve, reject veya revoke + not)
 - Herkese açık: `GET /users/:id/public` (ad, rozetler, itibar)
 
+Uygulama notları (PR, migration 016):
+
+- `reputation_events` üzerindeki `UNIQUE (kind, source_type, source_id, actor_id)` uygulanmadı: oy → geri al → yeniden oy aynı anahtarla birden çok olay gerektirir. Bunun yerine olay, aynı kural/kaynak/oy veren için net toplam 0 iken yalnız pozitif, pozitifken yalnız negatif yazılır (danışma kilidiyle). Negatif olay aynı `kind` değerini taşır. Kabul edilen yanıt değişirse eski yanıt için −5 yazılır.
+- `users.roles` yalnızca `reviewer|moderator|admin` değerlerini kabul eder (CHECK). `ADMIN_EMAILS` API açılışında mevcut hesaplara uygulanır; geliştirme hesabı dev-login ile admin olur. Yönetici kendi admin rolünü kaldıramaz.
+- Rol atama: `GET /admin/users?q=`, `PUT /admin/users/:id/roles` (yalnızca admin). Moderasyon: `PUT /moderation/{questions|answers|experiences}/:id` gövde `{status:'visible'|'hidden'}` (moderatör veya admin); `DELETE /experiences/:id` moderatöre de açıktır.
+- Kurumsal e-posta yalnızca `claim='student'` ve program seçilmeden kabul edilir; bağlantı `/dogrulama?token=` sayfasına gelir, sayfa `GET /verifications/confirm` çağırır. Aynı kurumsal adres başka hesapta açık/onaylı başvuruda kullanılamaz. İnceleyici e-posta başvurusunu onaylayamaz, yalnızca reddedebilir. Ret ve kaldırmada not zorunludur.
+- Belge `POST /verifications?claim=&universityId=&programId=` ile ham gövde olarak gönderilir (`express.raw`, 5 MB). Alan adı seed'i katalogdaki tam adla eşleşir; katalog migration'dan sonra yüklenirse API açılışında tamamlanır. Form verisi: `GET /verifications/options?universityId=`.
+- Kart yanıtları `authorId`, `authorBadges`, `authorReputation` alanlarını taşır.
+
 ## 017 · Mentorluk
 
 ```sql

@@ -8,6 +8,11 @@ import { promisify } from "node:util";
 import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
 import { pool } from "./db.ts";
+import {
+  hasAnyRole,
+  parseEmailList,
+  type StaffRole,
+} from "./services/verification-rules.ts";
 import type { User } from "../shared/contracts.ts";
 import { profileSchema } from "../shared/contracts.ts";
 const scrypt = promisify(nodeScrypt);
@@ -32,6 +37,7 @@ export function userFromRow(row: any): User {
     id: row.id,
     email: row.email,
     emailVerified: Boolean(row.email_verified_at),
+    roles: Array.isArray(row.roles) ? row.roles : [],
     profile: profileSchema.parse(row.profile),
   };
 }
@@ -108,4 +114,30 @@ export function requireVerifiedEmail(
       message: "Bu işlem için önce e-posta adresini doğrulamalısın.",
     });
   next();
+}
+/** Yetki rolü kontrolü; rol veritabanındaki users.roles alanından gelir. */
+export function requireRole(...allowed: StaffRole[]) {
+  return (_req: Request, res: Response, next: NextFunction) => {
+    if (!res.locals.user)
+      return res.status(401).json({
+        code: "AUTH_REQUIRED",
+        message: "Bu işlem için giriş yapmalısın.",
+      });
+    if (!hasAnyRole(res.locals.user.roles, allowed))
+      return res.status(403).json({
+        code: "FORBIDDEN",
+        message: "Bu işlem için yetkin bulunmuyor.",
+      });
+    next();
+  };
+}
+/** ADMIN_EMAILS listesindeki kayıtlı hesaplara açılışta admin rolü verir. */
+export async function applyAdminEmails(value = process.env.ADMIN_EMAILS) {
+  const emails = parseEmailList(value);
+  if (!emails.length) return 0;
+  const r = await pool.query(
+    "UPDATE users SET roles=array_append(roles,'admin') WHERE lower(email)=ANY($1::text[]) AND NOT ('admin'=ANY(roles))",
+    [emails],
+  );
+  return r.rowCount || 0;
 }

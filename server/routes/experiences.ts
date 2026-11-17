@@ -15,6 +15,8 @@ import {
   experienceAuthorStatus,
   onContributionEvent,
 } from "../services/community-rules.ts";
+import { toBadges } from "../services/verification-rules.ts";
+import { authorMetaSql } from "../services/verification.ts";
 const api = Router();
 const uuid = z.uuid();
 function toExperience(e: any, userId: string | null) {
@@ -29,6 +31,9 @@ function toExperience(e: any, userId: string | null) {
     title: e.title,
     body: e.body,
     author: e.author,
+    authorId: e.author_id,
+    authorBadges: toBadges(e.author_badges),
+    authorReputation: e.author_reputation,
     mine: !!userId && e.author_id === userId,
     votes: e.votes,
     voted: !!e.voted,
@@ -38,7 +43,8 @@ function toExperience(e: any, userId: string | null) {
 }
 const select = `SELECT e.*,u.profile->>'displayName' AS author,c.name AS community_name,
   (SELECT count(*)::int FROM experience_votes v WHERE v.experience_id=e.id) AS votes,
-  EXISTS(SELECT 1 FROM experience_votes v WHERE v.experience_id=e.id AND v.user_id=$1::uuid) AS voted
+  EXISTS(SELECT 1 FROM experience_votes v WHERE v.experience_id=e.id AND v.user_id=$1::uuid) AS voted,
+  ${authorMetaSql("e.author_id")}
   FROM experiences e JOIN users u ON u.id=e.author_id JOIN communities c ON c.id=e.community_id`;
 async function loadVisible(id: string) {
   const r = await pool.query(
@@ -138,9 +144,14 @@ api.put("/experiences/:id", requireUser, async (req, res) => {
 api.delete("/experiences/:id", requireUser, async (req, res) => {
   const id = uuid.parse(req.params.id);
   const e = await loadVisible(id);
-  // Moderatör yetkisi migration 016 (users.roles) ile eklenecek.
-  if (!canModifyExperience(e.author_id, res.locals.user.id))
-    fail(403, "FORBIDDEN", "Bu deneyimi yalnızca yazarı silebilir.");
+  if (
+    !canModifyExperience(e.author_id, res.locals.user.id, res.locals.user.roles)
+  )
+    fail(
+      403,
+      "FORBIDDEN",
+      "Bu deneyimi yalnızca yazarı veya moderatör silebilir.",
+    );
   await pool.query(
     "UPDATE experiences SET status='deleted',updated_at=now() WHERE id=$1",
     [id],

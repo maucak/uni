@@ -96,8 +96,9 @@ if (
       cities: ["Isparta"],
     };
     const result = await pool.query(
-      `INSERT INTO users(id,email,password_hash,profile,email_verified_at) VALUES($1,$2,$3,$4,now())
-       ON CONFLICT(email) DO UPDATE SET email_verified_at=COALESCE(users.email_verified_at,now()) RETURNING *`,
+      `INSERT INTO users(id,email,password_hash,profile,email_verified_at,roles) VALUES($1,$2,$3,$4,now(),'{admin}')
+       ON CONFLICT(email) DO UPDATE SET email_verified_at=COALESCE(users.email_verified_at,now()),
+       roles=CASE WHEN 'admin'=ANY(users.roles) THEN users.roles ELSE array_append(users.roles,'admin') END RETURNING *`,
       [
         randomUUID(),
         "developer@kampuspusula.invalid",

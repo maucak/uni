@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from "react";
+import { AuthorMeta } from "../components/AuthorMeta";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ThumbsUp, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ThumbsUp, CheckCircle2, EyeOff } from "lucide-react";
+import { isModerator } from "../lib/roles";
 import { useLoad } from "../lib/useLoad";
 import { api, json } from "../lib/api";
 import { useStore } from "../lib/store";
@@ -52,6 +54,20 @@ export default function QuestionDetail() {
       setActionError((e as Error).message);
     }
   }
+  async function hide(type: "questions" | "answers", targetId: string) {
+    if (!confirm("İçerik gizlensin mi?")) return;
+    setActionError("");
+    try {
+      await api(
+        `/moderation/${type}/${targetId}`,
+        json("PUT", { status: "hidden" }),
+      );
+      reload();
+    } catch (e) {
+      setActionError((e as Error).message);
+    }
+  }
+  const moderator = isModerator(user);
   if (loading) return <Loading />;
   if (error) return <ErrorBox message={error} retry={reload} />;
   if (!data) return null;
@@ -72,9 +88,18 @@ export default function QuestionDetail() {
         </div>
         <h1>{data.title}</h1>
         <p className="quiet">
-          {data.author} · {new Date(data.createdAt).toLocaleDateString("tr-TR")}
+          {data.author} <AuthorMeta meta={data} /> ·{" "}
+          {new Date(data.createdAt).toLocaleDateString("tr-TR")}
         </p>
         <p className="user-content">{data.body}</p>
+        {moderator && (
+          <button
+            className="text-button"
+            onClick={() => hide("questions", data.id)}
+          >
+            <EyeOff size={16} /> Soruyu gizle
+          </button>
+        )}
       </article>
       <h2 className="answers-heading">{data.answers.length} yanıt</h2>
       {actionError && <ErrorBox message={actionError} />}
@@ -89,6 +114,7 @@ export default function QuestionDetail() {
             <div className="answer-author">
               <span className="avatar">{a.author[0]}</span>
               <strong>{a.author}</strong>
+              <AuthorMeta meta={a} />
               <small>{new Date(a.createdAt).toLocaleDateString("tr-TR")}</small>
             </div>
             <p className="user-content">{a.body}</p>
@@ -103,6 +129,14 @@ export default function QuestionDetail() {
               <button className="text-button" onClick={() => accept(a)}>
                 <CheckCircle2 size={16} />{" "}
                 {a.accepted ? "Kabulü kaldır" : "Kabul edilen yanıt yap"}
+              </button>
+            )}
+            {moderator && (
+              <button
+                className="text-button"
+                onClick={() => hide("answers", a.id)}
+              >
+                <EyeOff size={16} /> Gizle
               </button>
             )}
           </article>

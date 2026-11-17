@@ -1,3 +1,11 @@
+import { randomUUID } from "node:crypto";
+import { authorMetaSql } from "./author-meta.ts";
+import {
+  hasAnyRole,
+  reputationEventFor,
+  reputationKindOf,
+  reputationRuleVersion,
+} from "./verification-rules.ts";
 import type { Profile } from "../../shared/contracts.ts";
 
 export type QuestionListFilter = {
@@ -25,7 +33,7 @@ export function buildQuestionListQuery(f: QuestionListFilter) {
     f.sort === "unanswered"
       ? `answer_count ASC,${rank}q.created_at DESC`
       : `${rank}q.created_at DESC`;
-  const text = `SELECT q.*,u.profile->>'displayName' AS author,c.name AS community_name,count(a.id)::int AS answer_count
+  const text = `SELECT q.*,u.profile->>'displayName' AS author,${authorMetaSql("q.author_id")},c.name AS community_name,count(a.id)::int AS answer_count
 FROM questions q JOIN users u ON u.id=q.author_id JOIN communities c ON c.id=q.community_id
 LEFT JOIN answers a ON a.question_id=q.id AND a.status='visible'
 WHERE ${where.join(" AND ")} GROUP BY q.id,u.id,c.id ORDER BY ${order},q.id LIMIT ${add(f.limit)}`;
@@ -60,9 +68,13 @@ export function acceptAnswerDecision(
   return { ok: true };
 }
 
-/** Deneyimi yalnızca yazarı düzenler veya siler (moderatör rolü migration 016 ile gelir). */
-export function canModifyExperience(authorId: string, userId: string) {
-  return authorId === userId;
+/** Deneyimi yazarı düzenler; silmede moderatör ve yönetici de yetkilidir (migration 016). */
+export function canModifyExperience(
+  authorId: string,
+  userId: string,
+  roles: readonly string[] = [],
+) {
+  return authorId === userId || hasAnyRole(roles, ["moderator", "admin"]);
 }
 
 /** Kişi kendi deneyimine oy veremez. Tekrar oy veritabanında birincil anahtarla engellenir. */
@@ -93,11 +105,49 @@ export type ContributionEvent =
     };
 
 /**
- * Katkı olayı kancası. Migration 016 (itibar) bu fonksiyonu reputation_events
- * tablosuna yazacak şekilde bağlayacak (rule_version='v1': yanıt oyu +2,
- * kabul edilen yanıt +5, deneyim oyu +1, geri almada negatif olay, kendine oy olay üretmez).
- * 015'te bilerek hiçbir şey yazmaz.
+ * Katkı olayı kancası: reputation_events tablosuna v1 kurallarıyla yazar
+ * (yanıt oyu +2, kabul edilen yanıt +5, deneyim oyu +1, geri almada negatif olay,
+ * kendine oy olay üretmez). Veritabanı modülü birim testlerde yüklenmesin diye
+ * dinamik olarak içe aktarılır.
  */
-export async function onContributionEvent(_event: ContributionEvent) {
-  // 016: reputation_events INSERT burada yapılacak.
+export async function onContributionEvent(event: ContributionEvent) {
+  const { transaction } = await import("../db.ts");
+  const sourceId = "answerId" in event ? event.answerId : event.experienceId;
+  const table = "answerId" in event ? "answers" : "experiences";
+  await transaction(async (client) => {
+    const author = await client.query(
+      `SELECT author_id FROM ${table} WHERE id=$1`,
+      [sourceId],
+    );
+    if (!author.rowCount) return;
+    const probe = reputationKindOf(event.kind);
+    if (!probe || author.rows[0].author_id === event.actorId) return;
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
+      `${probe.kind}:${sourceId}:${event.actorId}`,
+    ]);
+    const net = await client.query(
+      "SELECT COALESCE(sum(delta),0)::int AS net FROM reputation_events WHERE kind=$1 AND source_type=$2 AND source_id=$3 AND actor_id=$4",
+      [probe.kind, probe.sourceType, sourceId, event.actorId],
+    );
+    const record = reputationEventFor(
+      event.kind,
+      author.rows[0].author_id,
+      event.actorId,
+      net.rows[0].net,
+    );
+    if (!record) return;
+    await client.query(
+      "INSERT INTO reputation_events(id,user_id,kind,source_type,source_id,actor_id,delta,rule_version) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+      [
+        randomUUID(),
+        author.rows[0].author_id,
+        record.kind,
+        record.sourceType,
+        sourceId,
+        event.actorId,
+        record.delta,
+        reputationRuleVersion,
+      ],
+    );
+  });
 }

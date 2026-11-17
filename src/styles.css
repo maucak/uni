@@ -3461,3 +3461,56 @@ input[type="checkbox"] {
     grid-template-columns: 1fr;
   }
 }
+.author-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.verified-badge,
+.reputation {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  border-radius: 999px;
+  padding: 2px 8px;
+  border: 1px solid #e3e4e6;
+  background: #fff;
+  color: #5b6168;
+}
+.verified-badge {
+  border-color: #d9e3f0;
+  background: #f4f7fb;
+  color: #3f5f86;
+}
+.verification-list {
+  display: grid;
+  gap: 12px;
+}
+.verification-item {
+  display: grid;
+  gap: 6px;
+}
+.verification-item .hero-actions {
+  flex-wrap: wrap;
+}
+.status-pill {
+  font-size: 12px;
+  border-radius: 999px;
+  padding: 2px 9px;
+  background: #f1f2f3;
+  color: #5b6168;
+  width: fit-content;
+}
+.status-pill.approved {
+  background: #eef5ff;
+  color: #2f5c8f;
+}
+.status-pill.rejected,
+.status-pill.revoked {
+  background: #fbf1ec;
+  color: #a35a3c;
+}

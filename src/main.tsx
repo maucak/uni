@@ -21,6 +21,8 @@ import Communities from "./pages/Communities";
 import QuestionDetail from "./pages/QuestionDetail";
 import Method from "./pages/Method";
 import Sources from "./pages/Sources";
+import Verification from "./pages/Verification";
+import AdminVerification from "./pages/AdminVerification";
 import "./styles.css";
 function Protected({ children }: { children: React.ReactNode }) {
   const { user, loading, error } = useStore();
@@ -78,6 +80,19 @@ function App() {
               element={
                 <Protected>
                   <SourceManagement />
+                </Protected>
+              }
+            />
+            <Route path="dogrulama" element={<Verification />} />
+            <Route
+              path="yonetim"
+              element={<Navigate to="/yonetim/dogrulama" replace />}
+            />
+            <Route
+              path="yonetim/dogrulama"
+              element={
+                <Protected>
+                  <AdminVerification />
                 </Protected>
               }
             />
