@@ -55,3 +55,7 @@ Yeni davranış = yeni test. Testlerin neyi kanıtlamadığını da PR açıklam
 - Mimari: [docs/mimari.md](docs/mimari.md), RAG işletimi: [docs/rag.md](docs/rag.md)
 
 Tarihli notlar (`durum.md`, `RAG-DEVAM-NOTU.md` gibi) tarihsel kayıttır; güncel durumu yalnızca yol haritasında tutun.
+
+## Aynı makinede birden fazla kopya
+
+İki çalışma kopyasını (ör. iki dal) aynı anda çalıştırmak için her birinin `.env` dosyasında farklı `PORT` (API), `WEB_PORT` (Vite) ve `DATABASE_URL` verin; `WEB_ORIGIN` de `http://127.0.0.1:<WEB_PORT>` olmalı. `npm run test:integration` bu değerleri `.env`'den okur.

@@ -1,9 +1,10 @@
+import "dotenv/config";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import pg from "pg";
-const base = "http://127.0.0.1:5173/api/v1";
-const origin = "http://127.0.0.1:5173";
+const origin = process.env.WEB_ORIGIN || "http://127.0.0.1:5173";
+const base = `${origin}/api/v1`;
 const password = "Integration-test-passphrase-2026";
 const prefix = randomUUID();
 const userIds: string[] = [];
