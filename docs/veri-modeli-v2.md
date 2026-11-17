@@ -57,6 +57,13 @@ Kabul ölçütleri:
 - `hidden` ve `deleted` içerik listelerde görünmez.
 - Deneyim kartı "öğrenci deneyimi · <yıl>" etiketiyle resmi bilgiden ayrı görünür.
 
+Uygulama notları (PR, migration 015):
+
+- Program toplulukları `university_id` alanını da taşır; böylece `GET /communities?universityId=` bir üniversitenin hem üniversite hem bölüm topluluklarını döndürür. Üniversite topluluğu `communities(university_id) WHERE kind='university'` kısmi unique indeksiyle tekildir. "Gerçek üniversite", en az bir `is_sample=false` programı olan üniversitedir. `catalog:osym` içe aktarımı yeni üniversite ve program topluluklarını aynı işlemde oluşturur.
+- `sort=unanswered` filtre değil sıralamadır: yanıtsız sorular önce gelir. Arama `websearch_to_tsquery('turkish', q)` ile yapılır, sonuç `ts_rank` ile sıralanır. Eski `search` parametresi `q` için takma ad olarak kabul edilir.
+- Deneyimde tekrar oy `409 DUPLICATE_VOTE`, kendine oy `400 SELF_VOTE` döner. Deneyim yazmak için beyan edilen rol `student` veya `graduate` olmalıdır; `author_status` bu rolden alınır. Mezunun etiketi "mezun deneyimi · <yıl>" olur.
+- Moderatör ile silme, `users.roles` gelince (016) eklenecek. 015'te yalnızca yazar düzenler veya siler. İtibar olayları `server/services/community-rules.ts` içindeki `onContributionEvent` kancasına bağlanacak.
+
 ## 016 · Doğrulama ve itibar
 
 ```sql

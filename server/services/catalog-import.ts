@@ -198,6 +198,18 @@ export async function applyManifest(
       );
       universityId = u.rows[0].id;
       universityIds.set(p.university, universityId!);
+      // Migration 015: her gerçek üniversitenin tek bir 'university' topluluğu olur.
+      await client.query(
+        `INSERT INTO communities(id,name,slug,description,kind,university_id) VALUES($1,$2,$3,$4,'university',$5)
+         ON CONFLICT(university_id) WHERE kind='university' DO UPDATE SET name=excluded.name`,
+        [
+          randomUUID(),
+          p.university,
+          `university-${universityId}`,
+          "Kampüs yaşamı, barınma, ulaşım ve üniversite geneliyle ilgili sorular.",
+          universityId,
+        ],
+      );
     }
     const keyId = byKey.get(p.key),
       codeId = p.officialCode ? byCode.get(p.officialCode) : undefined;
@@ -234,13 +246,14 @@ export async function applyManifest(
         ],
       );
     await client.query(
-      `INSERT INTO communities(id,name,slug,description,program_id) VALUES($1,$2,$3,$4,$1)
-       ON CONFLICT(program_id) WHERE program_id IS NOT NULL DO UPDATE SET name=excluded.name`,
+      `INSERT INTO communities(id,name,slug,description,program_id,kind,university_id) VALUES($1,$2,$3,$4,$1,'program',$5)
+       ON CONFLICT(program_id) WHERE program_id IS NOT NULL DO UPDATE SET name=excluded.name,kind='program',university_id=excluded.university_id`,
       [
         id,
         `${p.university} · ${p.name} (${p.language})`,
         `program-${id}`,
         "Dersler, hazırlık, staj ve kampüs yaşamı hakkında programla ilgili sorular.",
+        universityId,
       ],
     );
     await client.query("DELETE FROM program_sources WHERE program_id=$1", [id]);
